@@ -1,11 +1,14 @@
 package database
 
 import (
+	// Stdlib
 	"encoding/json"
 	"strconv"
 	"strings"
 
+	// RPC
 	"github.com/go-steem/rpc/apis/types"
+	"github.com/go-steem/rpc/encoding/transaction"
 )
 
 type Config struct {
@@ -55,10 +58,14 @@ type Block struct {
 }
 
 type Transaction struct {
-	RefBlockNum    *types.Int   `json:"ref_block_num"`
-	RefBlockPrefix *types.Int   `json:"ref_block_prefix"`
-	Expiration     string       `json:"expiration"`
-	Operations     []*Operation `json:"operations"`
+	RefBlockNum    types.UInt16
+	RefBlockPrefix types.UInt32
+	Expiration     *types.Time
+	Operations     []*Operation
+}
+
+func (tx *Transaction) MarshalTransaction(encoder *transaction.Encoder) error {
+	return nil
 }
 
 type Content struct {

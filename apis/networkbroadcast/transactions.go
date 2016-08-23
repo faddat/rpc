@@ -7,48 +7,45 @@ import (
 	"encoding/hex"
 
 	// RPC
-	"github.com/go-steem/rpc/apis/types"
+	"github.com/go-steem/rpc/apis/database"
+	"github.com/go-steem/rpc/encoding/transaction"
 
 	// Vendor
 	"github.com/pkg/errors"
 )
 
-type Transaction struct {
-	RefBlockNum    uint16
-	RefBlockPrefix uint32
-	Operations     []interface{}
-	Expiration     *types.Time
-}
-
-func (tx *Transaction) Serialize() ([]byte, error) {
+func Serialize(tx *database.Transaction) ([]byte, error) {
 	// Prepare an encoder.
 	var b bytes.Buffer
-	encoder := transactions.NewEncoder(&w)
+	encoder := transaction.NewEncoder(&b)
 
 	// Write ref_block_num.
 	if err := encoder.Encode(tx.RefBlockNum); err != nil {
-		return nil, errors.Wrapf(err, "networkbroadcast: failed to encode RefBlockNum: %v", tx.RefBlockNum)
+		return nil, errors.Wrapf(err,
+			"networkbroadcast: failed to encode RefBlockNum: %v", tx.RefBlockNum)
 	}
 
 	// Write ref_block_prefix.
 	if err := encoder.Encode(tx.RefBlockPrefix); err != nil {
-		return nil, errors.Wrapf(err, "networkbroadcast: failed to encode RefBlockPrefix: %v", tx.RefBlockPrefix)
+		return nil, errors.Wrapf(err,
+			"networkbroadcast: failed to encode RefBlockPrefix: %v", tx.RefBlockPrefix)
 	}
 
 	// Write expiration.
-	timestamp := uint32(tx.Expiration.Unix())
-	if err := encoder.Encode(timestamp); err != nil {
-		return nil, errors.Wrapf(err, "networkbroadcast: failed to encode Expiration: %v (Unix)", timestamp)
+	if err := encoder.Encode(tx.Expiration); err != nil {
+		return nil, errors.Wrapf(err,
+			"networkbroadcast: failed to encode Expiration: %v", tx.Expiration)
 	}
 
 	// Write the number of operations.
-	if err := encoder.EncodeUVarint(uint64(len(tx.Operation))); err != nil {
-		return nil, errors.Wrap(err, "networkbroadcast: failed to encode Operations length")
+	if err := encoder.EncodeUVarint(uint64(len(tx.Operations))); err != nil {
+		return nil, errors.Wrap(err,
+			"networkbroadcast: failed to encode Operations length")
 	}
 
 	// Write the operations, one by one.
 	for _, op := range tx.Operations {
-		if err := encoder.Encode(op); err != nil {
+		if err := encoder.Encode(op.Body); err != nil {
 			return nil, errors.Wrap(err, "networkbroadcast: failed to encode an operation")
 		}
 	}
