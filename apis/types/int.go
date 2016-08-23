@@ -25,7 +25,7 @@ func unmarshalInt(data []byte) (int64, error) {
 	} else {
 		err = json.Unmarshal(data, &i)
 	}
-	return i, errors.Wrapf(err, "types: failed to unmarshal int: %v", data)
+	return i, errors.Wrapf(err, "types: failed to unmarshal integer: %v", data)
 }
 
 /*
