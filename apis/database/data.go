@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	// RPC
-	"github.com/go-steem/rpc/types"
 	"github.com/go-steem/rpc/encoding/transaction"
+	"github.com/go-steem/rpc/types"
 )
 
 type Config struct {
