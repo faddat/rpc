@@ -259,10 +259,10 @@ func (op *CommentOperation) IsStoryOperation() bool {
 //             (weight) )
 
 type VoteOperation struct {
-	Voter    string     `json:"voter"`
-	Author   string     `json:"author"`
-	Permlink string     `json:"permlink"`
-	Weight   *types.Int `json:"weight"`
+	Voter    string      `json:"voter"`
+	Author   string      `json:"author"`
+	Permlink string      `json:"permlink"`
+	Weight   types.Int16 `json:"weight"`
 }
 
 func (op *VoteOperation) MarshalTransaction() ([]byte, error) {
