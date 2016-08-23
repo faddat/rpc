@@ -2,7 +2,6 @@ package database
 
 import (
 	// Stdlib
-	"bytes"
 	"encoding/json"
 	"reflect"
 
@@ -54,6 +53,10 @@ var opBodyObjects = map[string]interface{}{
 	OpTypeLimitOrderCancel:    &LimitOrderCancelOperation{},
 	OpTypeDeleteComment:       &DeleteCommentOperation{},
 	OpTypeCommentOptions:      &CommentOptionsOperation{},
+}
+
+var opCodes = map[string]int{
+	OpTypeVote: 0,
 }
 
 // FC_REFLECT( steemit::chain::report_over_production_operation,
@@ -269,27 +272,28 @@ type VoteOperation struct {
 	Weight   types.Int16 `json:"weight"`
 }
 
-func (op *VoteOperation) MarshalTransaction() ([]byte, error) {
-	var b bytes.Buffer
-	encoder := transaction.NewEncoder(&b)
+func (op *VoteOperation) MarshalTransaction(encoder *transaction.Encoder) error {
+	if err := encoder.Encode(opCodes[OpTypeVote]); err != nil {
+		return err
+	}
 
 	if err := encoder.Encode(op.Voter); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := encoder.Encode(op.Author); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := encoder.Encode(op.Permlink); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := encoder.Encode(op.Weight); err != nil {
-		return nil, err
+		return err
 	}
 
-	return b.Bytes(), nil
+	return nil
 }
 
 // FC_REFLECT( steemit::chain::custom_operation,
