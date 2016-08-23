@@ -3,6 +3,7 @@ package transaction
 import (
 	// Stdlib
 	"encoding/binary"
+	"fmt"
 	"io"
 	"strings"
 
@@ -23,7 +24,7 @@ func NewEncoder(w io.Writer) *Encoder {
 
 func (encoder *Encoder) Encode(v interface{}) error {
 	if marshaller, ok := v.(TransactionMarshaller); ok {
-		return marshaller.MarshalTransaction(encoder.w)
+		return marshaller.MarshalTransaction(encoder)
 	}
 
 	switch v := v.(type) {
@@ -78,12 +79,14 @@ func (encoder *Encoder) Encode(v interface{}) error {
 }
 
 func (encoder *Encoder) encodeInt(v int64) error {
+	fmt.Println(v)
 	b := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutVarint(b, v)
 	return encoder.writeBytes(b[:n])
 }
 
 func (encoder *Encoder) encodeUInt(v uint64) error {
+	fmt.Println(v)
 	b := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutUvarint(b, v)
 	return encoder.writeBytes(b[:n])
@@ -105,6 +108,7 @@ func (encoder *Encoder) writeBytes(bs []byte) error {
 }
 
 func (encoder *Encoder) writeString(s string) error {
+	fmt.Println(s)
 	if _, err := io.Copy(encoder.w, strings.NewReader(s)); err != nil {
 		return errors.Wrapf(err, "encoder: failed to write string: %v", s)
 	}
