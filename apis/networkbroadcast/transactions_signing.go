@@ -1,4 +1,4 @@
-// +build secp256k1
+// +build !nosigning
 
 package networkbroadcast
 
