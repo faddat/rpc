@@ -1,12 +1,16 @@
 package database
 
 import (
+	// Stdlib
+	"bytes"
 	"encoding/json"
 	"reflect"
 
+	// RPC
 	"github.com/go-steem/rpc/apis/types"
 	"github.com/go-steem/rpc/encoding/transaction"
 
+	// Vendor
 	"github.com/pkg/errors"
 )
 
@@ -270,23 +274,19 @@ func (op *VoteOperation) MarshalTransaction() ([]byte, error) {
 	encoder := transaction.NewEncoder(&b)
 
 	if err := encoder.Encode(op.Voter); err != nil {
-		return nil, errors.Wrapf(err,
-			"database: failed to encode VoteOperation.Voter: %v", op.Voter)
+		return nil, err
 	}
 
 	if err := encoder.Encode(op.Author); err != nil {
-		return nil, errors.Wrapf(err,
-			"database: failed to encode VoteOperation.Author: %v", op.Author)
+		return nil, err
 	}
 
 	if err := encoder.Encode(op.Permlink); err != nil {
-		return nil, errors.Wrapf(err,
-			"database: failed to encode VoteOperation.Permlink: %v", op.Permlink)
+		return nil, err
 	}
 
 	if err := encoder.Encode(op.Weight); err != nil {
-		return nil, errors.Wrapf(err,
-			"database: failed to encode VoteOperation.Weight: %v", op.Weight)
+		return nil, err
 	}
 
 	return b.Bytes(), nil
