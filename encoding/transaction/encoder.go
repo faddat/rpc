@@ -21,6 +21,10 @@ func NewEncoder(w io.Writer) *Encoder {
 	return &Encoder{w}
 }
 
+func (encoder *Encoder) EncodeOperationID(id int) error {
+	return encoder.writeVarint(int64(id))
+}
+
 func (encoder *Encoder) Encode(v interface{}) error {
 	if marshaller, ok := v.(TransactionMarshaller); ok {
 		return marshaller.MarshalTransaction(encoder)
@@ -28,46 +32,46 @@ func (encoder *Encoder) Encode(v interface{}) error {
 
 	switch v := v.(type) {
 	case int:
-		return encoder.encodeInt(int64(v))
+		return encoder.encodeNumber(v)
 	case int8:
-		return encoder.encodeInt(int64(v))
+		return encoder.encodeNumber(v)
 	case int16:
-		return encoder.encodeInt(int64(v))
+		return encoder.encodeNumber(v)
 	case int32:
-		return encoder.encodeInt(int64(v))
+		return encoder.encodeNumber(v)
 	case int64:
-		return encoder.encodeInt(int64(v))
+		return encoder.encodeNumber(v)
 
 	case types.Int8:
-		return encoder.encodeInt(int64(v))
+		return encoder.encodeNumber(v)
 	case types.Int16:
-		return encoder.encodeInt(int64(v))
+		return encoder.encodeNumber(v)
 	case types.Int32:
-		return encoder.encodeInt(int64(v))
+		return encoder.encodeNumber(v)
 	case types.Int64:
-		return encoder.encodeInt(int64(v))
+		return encoder.encodeNumber(v)
 
 	case uint:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 	case uint8:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 	case uint16:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 	case uint32:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 	case uint64:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 
 	case types.UInt:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 	case types.UInt8:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 	case types.UInt16:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 	case types.UInt32:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 	case types.UInt64:
-		return encoder.encodeUInt(uint64(v))
+		return encoder.encodeNumber(v)
 
 	case string:
 		return encoder.encodeString(v)
@@ -77,9 +81,24 @@ func (encoder *Encoder) Encode(v interface{}) error {
 	}
 }
 
-func (encoder *Encoder) encodeInt(v int64) error {
+func (encoder *Encoder) encodeNumber(v interface{}) error {
+	if err := binary.Write(encoder.w, binary.LittleEndian, v); err != nil {
+		return errors.Wrapf(err, "encoder: failed to write number: %v", v)
+	}
+	return nil
+}
+
+func (encoder *Encoder) encodeString(v string) error {
+	if err := encoder.writeUVarint(uint64(len(v))); err != nil {
+		return errors.Wrapf(err, "encoder: failed to write string: %v", v)
+	}
+
+	return encoder.writeString(v)
+}
+
+func (encoder *Encoder) writeVarint(v int64) error {
 	if v >= 0 {
-		return encoder.encodeUInt(uint64(v))
+		return encoder.writeUVarint(uint64(v))
 	}
 
 	b := make([]byte, binary.MaxVarintLen64)
@@ -87,18 +106,10 @@ func (encoder *Encoder) encodeInt(v int64) error {
 	return encoder.writeBytes(b[:n])
 }
 
-func (encoder *Encoder) encodeUInt(v uint64) error {
+func (encoder *Encoder) writeUVarint(v uint64) error {
 	b := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutUvarint(b, v)
 	return encoder.writeBytes(b[:n])
-}
-
-func (encoder *Encoder) encodeString(v string) error {
-	if err := encoder.encodeUInt(uint64(len(v))); err != nil {
-		return errors.Wrapf(err, "encoder: failed to write string: %v", v)
-	}
-
-	return encoder.writeString(v)
 }
 
 func (encoder *Encoder) writeBytes(bs []byte) error {

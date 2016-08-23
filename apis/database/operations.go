@@ -273,7 +273,7 @@ type VoteOperation struct {
 }
 
 func (op *VoteOperation) MarshalTransaction(encoder *transaction.Encoder) error {
-	if err := encoder.Encode(opCodes[OpTypeVote]); err != nil {
+	if err := encoder.EncodeOperationID(opCodes[OpTypeVote]); err != nil {
 		return err
 	}
 
