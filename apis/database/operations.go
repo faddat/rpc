@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/go-steem/rpc/apis/types"
+	"github.com/go-steem/rpc/encoding/transaction"
 
 	"github.com/pkg/errors"
 )
@@ -264,6 +265,33 @@ type VoteOperation struct {
 	Weight   *types.Int `json:"weight"`
 }
 
+func (op *VoteOperation) MarshalTransaction() ([]byte, error) {
+	var b bytes.Buffer
+	encoder := transaction.NewEncoder(&b)
+
+	if err := encoder.Encode(op.Voter); err != nil {
+		return nil, errors.Wrapf(err,
+			"database: failed to encode VoteOperation.Voter: %v", op.Voter)
+	}
+
+	if err := encoder.Encode(op.Author); err != nil {
+		return nil, errors.Wrapf(err,
+			"database: failed to encode VoteOperation.Author: %v", op.Author)
+	}
+
+	if err := encoder.Encode(op.Permlink); err != nil {
+		return nil, errors.Wrapf(err,
+			"database: failed to encode VoteOperation.Permlink: %v", op.Permlink)
+	}
+
+	if err := encoder.Encode(op.Weight); err != nil {
+		return nil, errors.Wrapf(err,
+			"database: failed to encode VoteOperation.Weight: %v", op.Weight)
+	}
+
+	return b.Bytes(), nil
+}
+
 // FC_REFLECT( steemit::chain::custom_operation,
 //             (required_auths)
 //             (id)
@@ -414,5 +442,4 @@ func (auth *Auth) UnmarshalJSON(data []byte) error {
 	auth.Key = key
 	auth.Check = check
 	return nil
-
 }
