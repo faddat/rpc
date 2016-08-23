@@ -1,12 +1,25 @@
 package networkbroadcast
 
 import (
+	// Stdlib
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
 
+	// Vendor
 	"github.com/pkg/errors"
 )
+
+type Transaction struct {
+	RefBlockNum    uint16
+	RefBlockPrefix uint32
+	Operations     []interface{}
+	Expiration     *types.Time
+}
+
+func Serialize() (*SignedTransaction, error) {
+
+}
 
 func RefBlockNum(blockNumber uint32) uint16 {
 	return uint16(blockNumber)
