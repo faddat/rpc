@@ -8,7 +8,7 @@ import (
 
 	// RPC
 	"github.com/go-steem/rpc/apis/database"
-	"github.com/go-steem/rpc/apis/types"
+	"github.com/go-steem/rpc/types"
 )
 
 func TestTransaction_Serialize(t *testing.T) {
