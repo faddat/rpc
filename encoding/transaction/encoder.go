@@ -6,9 +6,6 @@ import (
 	"io"
 	"strings"
 
-	// RPC
-	"github.com/go-steem/rpc/apis/types"
-
 	// Vendor
 	"github.com/pkg/errors"
 )
@@ -37,6 +34,13 @@ func (encoder *Encoder) EncodeUVarint(i uint64) error {
 	return encoder.writeBytes(b[:n])
 }
 
+func (encoder *Encoder) EncodeNumber(v interface{}) error {
+	if err := binary.Write(encoder.w, binary.LittleEndian, v); err != nil {
+		return errors.Wrapf(err, "encoder: failed to write number: %v", v)
+	}
+	return nil
+}
+
 func (encoder *Encoder) Encode(v interface{}) error {
 	if marshaller, ok := v.(TransactionMarshaller); ok {
 		return marshaller.MarshalTransaction(encoder)
@@ -44,46 +48,26 @@ func (encoder *Encoder) Encode(v interface{}) error {
 
 	switch v := v.(type) {
 	case int:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 	case int8:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 	case int16:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 	case int32:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 	case int64:
-		return encoder.encodeNumber(v)
-
-	case types.Int8:
-		return encoder.encodeNumber(v)
-	case types.Int16:
-		return encoder.encodeNumber(v)
-	case types.Int32:
-		return encoder.encodeNumber(v)
-	case types.Int64:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 
 	case uint:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 	case uint8:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 	case uint16:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 	case uint32:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 	case uint64:
-		return encoder.encodeNumber(v)
-
-	case types.UInt:
-		return encoder.encodeNumber(v)
-	case types.UInt8:
-		return encoder.encodeNumber(v)
-	case types.UInt16:
-		return encoder.encodeNumber(v)
-	case types.UInt32:
-		return encoder.encodeNumber(v)
-	case types.UInt64:
-		return encoder.encodeNumber(v)
+		return encoder.EncodeNumber(v)
 
 	case string:
 		return encoder.encodeString(v)
@@ -91,13 +75,6 @@ func (encoder *Encoder) Encode(v interface{}) error {
 	default:
 		return errors.Errorf("encoder: unsupported type encountered")
 	}
-}
-
-func (encoder *Encoder) encodeNumber(v interface{}) error {
-	if err := binary.Write(encoder.w, binary.LittleEndian, v); err != nil {
-		return errors.Wrapf(err, "encoder: failed to write number: %v", v)
-	}
-	return nil
 }
 
 func (encoder *Encoder) encodeString(v string) error {
