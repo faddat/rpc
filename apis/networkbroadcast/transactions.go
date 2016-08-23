@@ -20,41 +20,40 @@ type Transaction struct {
 	Expiration     *types.Time
 }
 
-func (t *Transaction) Serialize() ([]byte, error) {
-	// Write buffer.
+func (tx *Transaction) Serialize() ([]byte, error) {
+	// Prepare an encoder.
 	var b bytes.Buffer
-
-	// Get ready for varints.
-	varintBuffer := make([]byte, binary.MaxVarintLen64)
-
-	putVarint := func(x int64) error {
-		n := binary.PutVarint(varintBuffer, x)
-		data := varintBuffer[:n]
-		_, err := b.Write(data)
-		return err
-	}
+	encoder := transactions.NewEncoder(&w)
 
 	// Write ref_block_num.
-	if err := binary.Write(&b, binary.LittleEndian, t.RefBlockNum); err != nil {
-		return nil, errors.Wrapf(err, "networkbroadcast: failed to encode RefBlockNum: %v", t.RefBlockNum)
+	if err := encoder.Encode(tx.RefBlockNum); err != nil {
+		return nil, errors.Wrapf(err, "networkbroadcast: failed to encode RefBlockNum: %v", tx.RefBlockNum)
 	}
 
 	// Write ref_block_prefix.
-	if err := binary.Write(&b, binary.LittleEndian, t.RefBlockPrefix); err != nil {
-		return nil, errors.Wrapf(err, "networkbroadcast: failed to encode RefBlockPrefix: %v", t.RefBlockPrefix)
+	if err := encoder.Encode(tx.RefBlockPrefix); err != nil {
+		return nil, errors.Wrapf(err, "networkbroadcast: failed to encode RefBlockPrefix: %v", tx.RefBlockPrefix)
 	}
 
 	// Write expiration.
-	timestamp := uint32(t.Expiration.Unix())
-	if err := binary.Write(&b, binary.LittleEndian, timestamp); err != nil {
+	timestamp := uint32(tx.Expiration.Unix())
+	if err := encoder.Encode(timestamp); err != nil {
 		return nil, errors.Wrapf(err, "networkbroadcast: failed to encode Expiration: %v (Unix)", timestamp)
 	}
 
 	// Write the number of operations.
-	if err := putVarint(int64(len(t.Operations))); err != nil {
+	if err := encoder.EncodeUVarint(uint64(len(tx.Operation))); err != nil {
 		return nil, errors.Wrap(err, "networkbroadcast: failed to encode Operations length")
 	}
 
+	// Write the operations, one by one.
+	for _, op := range tx.Operations {
+		if err := encoder.Encode(op); err != nil {
+			return nil, errors.Wrap(err, "networkbroadcast: failed to encode an operation")
+		}
+	}
+
+	// Return the result.
 	return b.Bytes(), nil
 }
 

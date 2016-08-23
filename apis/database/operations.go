@@ -55,7 +55,7 @@ var opBodyObjects = map[string]interface{}{
 	OpTypeCommentOptions:      &CommentOptionsOperation{},
 }
 
-var opCodes = map[string]int{
+var opCodes = map[string]uint64{
 	OpTypeVote: 0,
 }
 
@@ -273,7 +273,7 @@ type VoteOperation struct {
 }
 
 func (op *VoteOperation) MarshalTransaction(encoder *transaction.Encoder) error {
-	if err := encoder.EncodeOperationID(opCodes[OpTypeVote]); err != nil {
+	if err := encoder.EncodeUVarint(opCodes[OpTypeVote]); err != nil {
 		return err
 	}
 

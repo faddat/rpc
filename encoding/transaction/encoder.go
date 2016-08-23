@@ -21,8 +21,20 @@ func NewEncoder(w io.Writer) *Encoder {
 	return &Encoder{w}
 }
 
-func (encoder *Encoder) EncodeOperationID(id int) error {
-	return encoder.writeVarint(int64(id))
+func (encoder *Encoder) EncodeVarint(i int64) error {
+	if i >= 0 {
+		return encoder.EncodeUVarint(uint64(i))
+	}
+
+	b := make([]byte, binary.MaxVarintLen64)
+	n := binary.PutVarint(b, i)
+	return encoder.writeBytes(b[:n])
+}
+
+func (encoder *Encoder) EncodeUVarint(i uint64) error {
+	b := make([]byte, binary.MaxVarintLen64)
+	n := binary.PutUvarint(b, i)
+	return encoder.writeBytes(b[:n])
 }
 
 func (encoder *Encoder) Encode(v interface{}) error {
@@ -89,27 +101,11 @@ func (encoder *Encoder) encodeNumber(v interface{}) error {
 }
 
 func (encoder *Encoder) encodeString(v string) error {
-	if err := encoder.writeUVarint(uint64(len(v))); err != nil {
+	if err := encoder.EncodeUVarint(uint64(len(v))); err != nil {
 		return errors.Wrapf(err, "encoder: failed to write string: %v", v)
 	}
 
 	return encoder.writeString(v)
-}
-
-func (encoder *Encoder) writeVarint(v int64) error {
-	if v >= 0 {
-		return encoder.writeUVarint(uint64(v))
-	}
-
-	b := make([]byte, binary.MaxVarintLen64)
-	n := binary.PutVarint(b, v)
-	return encoder.writeBytes(b[:n])
-}
-
-func (encoder *Encoder) writeUVarint(v uint64) error {
-	b := make([]byte, binary.MaxVarintLen64)
-	n := binary.PutUvarint(b, v)
-	return encoder.writeBytes(b[:n])
 }
 
 func (encoder *Encoder) writeBytes(bs []byte) error {
