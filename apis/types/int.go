@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"strconv"
 
+	// RPC
+	"github.com/go-steem/rpc/encoding/transaction"
+
 	// Vendor
 	"github.com/pkg/errors"
 )
@@ -54,6 +57,10 @@ func (num *Int8) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (num Int8) MarshalTransaction(encoder *transaction.Encoder) error {
+	return encoder.EncodeNumber(int(num))
+}
+
 type Int16 int16
 
 func (num *Int16) UnmarshalJSON(data []byte) error {
@@ -64,6 +71,10 @@ func (num *Int16) UnmarshalJSON(data []byte) error {
 
 	*num = Int16(v)
 	return nil
+}
+
+func (num Int16) MarshalTransaction(encoder *transaction.Encoder) error {
+	return encoder.EncodeNumber(int16(num))
 }
 
 type Int32 int32
@@ -78,6 +89,10 @@ func (num *Int32) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (num Int32) MarshalTransaction(encoder *transaction.Encoder) error {
+	return encoder.EncodeNumber(int32(num))
+}
+
 type Int64 int64
 
 func (num *Int64) UnmarshalJSON(data []byte) error {
@@ -88,4 +103,8 @@ func (num *Int64) UnmarshalJSON(data []byte) error {
 
 	*num = Int64(v)
 	return nil
+}
+
+func (num Int64) MarshalTransaction(encoder *transaction.Encoder) error {
+	return encoder.EncodeNumber(int64(num))
 }

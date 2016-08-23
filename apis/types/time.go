@@ -1,7 +1,11 @@
 package types
 
 import (
+	// Stdlib
 	"time"
+
+	// RPC
+	"github.com/go-steem/rpc/encoding/transaction"
 )
 
 const Layout = `"2006-01-02T15:04:05"`
@@ -21,4 +25,8 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 	}
 	t.Time = &parsed
 	return nil
+}
+
+func (t *Time) MarshalTransaction(encoder *transaction.Encoder) error {
+	return encoder.Encode(uint32(t.Unix()))
 }
