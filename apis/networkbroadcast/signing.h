@@ -4,7 +4,7 @@
 int sign_transaction(
 	const unsigned char *digest,
 	const unsigned char *privkey,
-	char *signature,
+	unsigned char *signature,
 	int *recid
 );
 

@@ -1,28 +1,42 @@
+#include <stdbool.h>
 #include <string.h>
 
 #include "signing.h"
 #include "secp256k1.h"
 #include "secp256k1_recovery.h"
 
+
+static int sign(
+	const unsigned char *digest,
+	const unsigned char *privkey,
+	const void *ndata,
+	unsigned char *signature,
+	int *recid
+);
+
+
+static bool is_canonical(const unsigned char *signature);
+
+
 int sign_transaction(
 	const unsigned char *digest,
 	const unsigned char *privkey,
-	char *signature,
+	unsigned char *signature,
 	int *recid
 ) {
-	int ndata[0] = {0};
+	int ndata[1] = {0};
 
-	char tmpsignature[64];
+	unsigned char tmpsignature[64];
 	int tmprecid;
 
-	while 1 {
+	while (1) {
 		// Sign the transaction.
 		if (!sign(digest, privkey, ndata, tmpsignature, &tmprecid)) {
 			return 0;
 		}
 
 		// Check whether the signiture is canonical.
-		if is_canonical(tmpsignature) {
+		if (is_canonical(tmpsignature)) {
 			tmprecid += 4;  // compressed
 			tmprecid += 27; // compact
 			break;
@@ -34,11 +48,12 @@ int sign_transaction(
 	return 1;
 }
 
-int sign(
+
+static int sign(
 	const unsigned char *digest,
 	const unsigned char *privkey,
 	const void *ndata,
-	char *signature,
+	unsigned char *signature,
 	int *recid
 ) {
 	// Prepare a context.
@@ -48,20 +63,21 @@ int sign(
 	secp256k1_ecdsa_recoverable_signature sig;
 
 	// Sign the digest using the given private key.
-	if (!secp256k1_ecdsa_sign_recoverable(ctx, &sig, msg32, privkey, NULL, ndata)) {
+	if (!secp256k1_ecdsa_sign_recoverable(ctx, &sig, digest, privkey, NULL, ndata)) {
 		secp256k1_context_destroy(ctx);
 		return 0;
 	}
 
 	// Serialize.
-	secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, signature, &recid, &sig);
+	secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, signature, recid, &sig);
 
 	// Destroy the context and return succcess.
 	secp256k1_context_destroy(ctx);
 	return 1;
 }
 
-bool is_canonical(const char *signature) {
+
+static bool is_canonical(const unsigned char *sig) {
 	return (!(sig[0] & 0x80) &&
 			!(sig[0] == 0 && !(sig[1] & 0x80)) &&
 			!(sig[32] & 0x80) &&
