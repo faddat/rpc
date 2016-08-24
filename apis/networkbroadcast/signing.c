@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "sign.h"
+#include "signing.h"
 #include "secp256k1.h"
 #include "secp256k1_recovery.h"
 #include "ecdsa.h"
