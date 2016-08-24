@@ -56,8 +56,8 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 		cKeys = append(cKeys, C.CBytes(key))
 	}
 	defer func() {
-		for _, key := range cKeys {
-			C.free(key)
+		for _, cKey := range cKeys {
+			C.free(cKey)
 		}
 	}()
 
