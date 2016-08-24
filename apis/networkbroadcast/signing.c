@@ -38,6 +38,8 @@ int sign_transaction(
 			tmprecid += 27; // compact
 			break;
 		}
+
+		ndata[0]++;
 	}
 
 	memcpy(signature, tmpsignature, 64);
