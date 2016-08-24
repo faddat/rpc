@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"unsafe"
 
 	// RPC
 	"github.com/go-steem/rpc/apis/database"
@@ -15,7 +16,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([]byte, error) {
+// #include <stdlib.h>
+// #include "signing.h"
+import "C"
+
+func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, error) {
 	var messageBuffer bytes.Buffer
 
 	// Write the chain ID.
@@ -41,6 +46,35 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([]byte, er
 	// Compute the digest.
 	digest := sha256.Sum256(messageBuffer.Bytes())
 
-	panic("Not Implemented")
-	return nil, nil
+	// Sign.
+	cDigest := C.CBytes(digest)
+	defer C.free(cDigest)
+
+	cKeys := make([]unsafe.Pointer, 0, len(privKeys))
+	for _, key := range privKeys {
+		cKeys = append(cKeys, C.CBytes(key))
+	}
+	defer func() {
+		for _, key := range cKeys {
+			C.free(key)
+		}
+	}()
+
+	sigs := make([][]byte, 0, len(privKeys))
+	for _, key := range cKeys {
+		signature := make([]byte, 64)
+		var recid int
+
+		if i := int(C.sign_transaction(cDigest, cKey)); i == 0 {
+			return nil, errors.New("sign_transaction returned a non-zero exit status")
+		}
+
+		sig := make([]byte, 65)
+		sig[0] = byte(recid)
+		copy(sig[1:], signature)
+
+		sigs = append(sigs, sig)
+	}
+
+	return sigs, nil
 }
