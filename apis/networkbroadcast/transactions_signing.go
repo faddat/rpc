@@ -16,6 +16,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// #cgo LDFLAGS: -lsecp256k1
 // #include <stdlib.h>
 // #include "signing.h"
 import "C"
