@@ -77,7 +77,7 @@ static int sign(
 
 static bool is_canonical(const unsigned char *sig) {
 	return (!(sig[0] & 0x80) &&
-			!(sig[0] == 0 && !(sig[1] & 0x80)) &&
-			!(sig[32] & 0x80) &&
-			!(sig[32] == 0 && !(sig[33] & 0x80)));
+	        !(sig[0] == 0 && !(sig[1] & 0x80)) &&
+	        !(sig[32] & 0x80) &&
+	        !(sig[32] == 0 && !(sig[33] & 0x80)));
 }
