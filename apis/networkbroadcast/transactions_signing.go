@@ -48,7 +48,7 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 	digest := sha256.Sum256(messageBuffer.Bytes())
 
 	// Sign.
-	cDigest := C.CBytes(digest)
+	cDigest := C.CBytes(digest[:])
 	defer C.free(cDigest)
 
 	cKeys := make([]unsafe.Pointer, 0, len(privKeys))
@@ -62,7 +62,7 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 	}()
 
 	sigs := make([][]byte, 0, len(privKeys))
-	for _, key := range cKeys {
+	for _, cKey := range cKeys {
 		signature := make([]byte, 64)
 		var recid C.int
 
