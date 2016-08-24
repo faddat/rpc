@@ -66,7 +66,8 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 		signature := make([]byte, 64)
 		var recid C.int
 
-		i := int(C.sign_transaction(cDigest, cKey, *C.uchar(&signature[0]), &recid))
+		i := int(C.sign_transaction(
+			(*C.uchar)(cDigest), (*C.uchar)(cKey), (*C.uchar)(&signature[0]), &recid))
 		if i == 0 {
 			return nil, errors.New("sign_transaction returned a non-zero exit status")
 		}
