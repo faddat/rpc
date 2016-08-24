@@ -5,7 +5,6 @@
 #include "secp256k1.h"
 #include "secp256k1_recovery.h"
 
-
 static int sign(
 	const unsigned char *digest,
 	const unsigned char *privkey,
@@ -14,9 +13,7 @@ static int sign(
 	int *recid
 );
 
-
 static bool is_canonical(const unsigned char *signature);
-
 
 int sign_transaction(
 	const unsigned char *digest,
@@ -48,7 +45,6 @@ int sign_transaction(
 	return 1;
 }
 
-
 static int sign(
 	const unsigned char *digest,
 	const unsigned char *privkey,
@@ -75,7 +71,6 @@ static int sign(
 	secp256k1_context_destroy(ctx);
 	return 1;
 }
-
 
 static bool is_canonical(const unsigned char *sig) {
 	return (!(sig[0] & 0x80) &&
