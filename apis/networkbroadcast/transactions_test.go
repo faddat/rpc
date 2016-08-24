@@ -11,10 +11,12 @@ import (
 	"github.com/go-steem/rpc/types"
 )
 
-func TestTransaction_Serialize(t *testing.T) {
+var tx database.Transaction
+
+func init() {
 	expiration := time.Date(2016, 8, 8, 12, 24, 17, 0, time.UTC)
 
-	tx := database.Transaction{
+	tx = database.Transaction{
 		RefBlockNum:    36029,
 		RefBlockPrefix: 1164960351,
 		Expiration:     &types.Time{&expiration},
@@ -30,7 +32,9 @@ func TestTransaction_Serialize(t *testing.T) {
 			},
 		},
 	}
+}
 
+func TestTransaction_Serialize(t *testing.T) {
 	expectedHex := "bd8c5fe26f45f179a8570100057865726f63057865726f6306706973746f6e1027"
 
 	serialized, err := Serialize(&tx)
