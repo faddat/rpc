@@ -1,9 +1,10 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "signing.h"
 #include "secp256k1.h"
 #include "secp256k1_recovery.h"
+
+#include "signing.h"
 
 static int sign(
 	const unsigned char *digest,
