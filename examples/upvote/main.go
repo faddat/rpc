@@ -84,7 +84,6 @@ func run() (err error) {
 	tx := transactions.NewSignedTransaction(&types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(props.HeadBlockNumber),
 		RefBlockPrefix: transactions.RefBlockPrefix(props.HeadBlockID),
-		Expiration:     &expiration,
 	})
 
 	tx.PushOperation(&operations.Vote{
