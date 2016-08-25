@@ -64,10 +64,10 @@ static int sign(
 	unsigned char *signature,
 	int *recid
 ) {
-	printf("DIGEST:\n");
-	dump(digest, 32);
-	printf("KEY:\n");
-	dump(privkey, 32);
+	//printf("DIGEST:\n");
+	//dump(digest, 32);
+	//printf("KEY:\n");
+	//dump(privkey, 32);
 
 	// Prepare a signature.
 	secp256k1_ecdsa_recoverable_signature sig;
@@ -77,8 +77,8 @@ static int sign(
 		return 0;
 	}
 
-	printf("SIGNATURE DATA:\n");
-	dump(sig.data, 65);
+	//printf("SIGNATURE DATA:\n");
+	//dump(sig.data, 65);
 
 	// Serialize and return success.
 	secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, signature, recid, &sig);
