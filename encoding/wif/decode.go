@@ -16,7 +16,13 @@ func Decode(wif string) ([]byte, error) {
 	return w.PrivKey.Serialize(), nil
 }
 
-// GetPublicKey returns the public key associated with the given WIF.
+// GetPublicKey returns the public key associated with the given WIF
+// in the 33-byte compressed format.
 func GetPublicKey(wif string) ([]byte, error) {
-	panic("not implemented")
+	w, err := btcutil.DecodeWIF(wif)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to decode WIF")
+	}
+
+	return w.PrivKey.PubKey.SerializeCompressed(), nil
 }
