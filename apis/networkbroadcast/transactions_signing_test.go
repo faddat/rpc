@@ -25,6 +25,18 @@ func init() {
 	}
 }
 
+var publicKeys = make([][]byte, 0, len(wifs))
+
+func init() {
+	for _, v := range wifs {
+		pubKey, err := wif.GetPublicKey(v)
+		if err != nil {
+			panic(err)
+		}
+		publicKeys = append(publicKeys, pubKey)
+	}
+}
+
 func TestTransaction_Digest(t *testing.T) {
 	expected := "ccbcb7d64444356654febe83b8010ca50d99edd0389d273b63746ecaf21adb92"
 
@@ -39,17 +51,26 @@ func TestTransaction_Digest(t *testing.T) {
 	}
 }
 
-func TestTransaction_Sign(t *testing.T) {
-	expected := "207a373c828b872d52a6946d31a22b4530e83a20bf89b4b71e29bbdffb4877c584232297ba3f22929506bf9706b2e67db9f99e517580cfcabeae492e2472d0a0dd"
-
+func TestTransaction_SignAndVerify(t *testing.T) {
 	sigs, err := Sign(&tx, SteemChain, privateKeys)
 	if err != nil {
 		t.Error(err)
 	}
 
-	got := hex.EncodeToString(sigs[0])
+	sigsHex := make([]string, 0, len(sigs))
+	for _, sig := range sigs {
+		sigsHex = append(sigsHex, hex.EncodeToString(sig))
+	}
+	tx.Signatures = sigsHex
+	defer func() {
+		tx.Signatures = nil
+	}()
 
-	if got != expected {
-		t.Errorf("\n\nexpected:\n%v\n\ngot:\n%v\n\n", expected, got)
+	ok, err := Verify(&tx, SteemChain, publicKeys)
+	if err != nil {
+		t.Error(err)
+	}
+	if !ok {
+		t.Error("verification failed")
 	}
 }

@@ -118,7 +118,7 @@ func Verify(tx *database.Transaction, chain *Chain, pubKeys [][]byte) (bool, err
 			return false, errors.Wrap(err, "failed to decode signature hex")
 		}
 
-		recoverParameter := sig[0]
+		recoverParameter := sig[0] - 27 - 4
 		sig = sig[1:]
 
 		cSig := C.CBytes(sig)
