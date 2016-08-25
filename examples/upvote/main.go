@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -107,4 +109,13 @@ func run() (err error) {
 
 	// Success!
 	return nil
+}
+
+func readWIF() (string, error) {
+	content, err := ioutil.ReadFile("wif.txt")
+	if err != nil {
+		return "", errors.Wrap(err, "failed to read wif.txt")
+	}
+
+	return strings.TrimSpace(string(content)), nil
 }
