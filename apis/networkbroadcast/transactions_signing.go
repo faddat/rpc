@@ -76,10 +76,10 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 			recid     C.int
 		)
 
-		i := C.sign_transaction(
+		code := C.sign_transaction(
 			(*C.uchar)(cDigest), (*C.uchar)(cKey), (*C.uchar)(&signature[0]), &recid)
-		if i == 0 {
-			return nil, errors.New("sign_transaction returned a non-zero exit status")
+		if code == 0 {
+			return nil, errors.New("sign_transaction returned 0")
 		}
 
 		sig := make([]byte, 65)
@@ -90,4 +90,65 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 	}
 
 	return sigs, nil
+}
+
+func Verify(tx *database.Transaction, chain *Chain, pubKeys [][]byte) (bool, error) {
+	// Compute the digest, again.
+	digest, err := Digest(tx)
+	if err != nil {
+		return false, err
+	}
+
+	cDigest := C.CBytes(digest)
+	defer C.free(cDigest)
+
+	// Make sure to free memory.
+	cSigs := make([]unsafe.Pointer, 0, len(tx.Signatures))
+	defer func() {
+		for _, cSig := range cSigs {
+			C.free(cSig)
+		}
+	}()
+
+	// Collect verified public keys.
+	pubKeysFound := make([][]byte, len(pubKeys))
+	for i, signature := range tx.Signatures {
+		sig, err := hex.DecodeString(signature)
+		if err != nil {
+			return false, errors.Wrap(err, "failed to decode signature hex")
+		}
+
+		recoverParameter := sig[0]
+		sig := sig[1:]
+
+		cSig := C.CBytes(sig)
+		cSigs = append(cSigs, cSig)
+
+		var publicKey [33]byte
+
+		code := C.verify_recoverable_signature(
+			(*C.char)(cDigest),
+			(*C.char)(cSig),
+			(C.int)(recoverParameter),
+			(*C.char)(&publicKey[0]),
+		)
+		if code == 1 {
+			pubKeysFound[i] = publicKey[:]
+		}
+	}
+
+	for i := range pubKeys {
+		if !bytes.Equal(pubKeysFound[i], pubKeys[i]) {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
+func verifySignature(pubKey []byte, message []byte, signature []byte) (bool, error) {
+	code := C.verify_signature((*C.char)(cPubKey), (*C.char)(cMessage), (*C.char)(cSignature))
+	if code == 0 {
+		return false, errors.New("verify_signature returned 0")
+	}
+	return true, nil
 }
