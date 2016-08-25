@@ -38,6 +38,12 @@ func run() (err error) {
 	}
 	voter, author, permlink := args[0], args[1], args[2]
 
+	// Read WIF.
+	wifKey, err := readWIF()
+	if err != nil {
+		return err
+	}
+
 	// Start catching signals.
 	var interrupted bool
 	signalCh := make(chan os.Signal, 1)
