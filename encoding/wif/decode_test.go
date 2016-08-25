@@ -7,15 +7,17 @@ import (
 )
 
 func TestDecode(t *testing.T) {
-	privKey, err := Decode(wif)
-	if err != nil {
-		t.Error(err)
-	}
+	for _, d := range data {
+		privKey, err := Decode(d.WIF)
+		if err != nil {
+			t.Error(err)
+		}
 
-	expected := privKeyHex
-	got := hex.EncodeToString(privKey)
+		expected := d.PrivateKeyHex
+		got := hex.EncodeToString(privKey)
 
-	if got != expected {
-		t.Errorf("expected %v, got %v", expected, got)
+		if got != expected {
+			t.Errorf("expected %v, got %v", expected, got)
+		}
 	}
 }
