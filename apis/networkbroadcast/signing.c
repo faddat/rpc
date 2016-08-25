@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "secp256k1.h"
@@ -7,6 +8,7 @@
 #include "signing.h"
 
 static int sign(
+	const secp256k1_context* ctx,
 	const unsigned char *digest,
 	const unsigned char *privkey,
 	const void *ndata,
@@ -16,62 +18,64 @@ static int sign(
 
 static bool is_canonical(const unsigned char *signature);
 
+void dump(const unsigned char *array, int len) {
+	for (int i = 0; i < len; i++) {
+		printf("%d ", array[i]);
+	}
+	printf("\n");
+}
+
 int sign_transaction(
 	const unsigned char *digest,
 	const unsigned char *privkey,
 	unsigned char *signature,
 	int *recid
 ) {
-	int ndata = 1;
+	secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
 
-	unsigned char tmpsignature[64];
-	int tmprecid;
+	int ndata = 1;
 
 	while (1) {
 		// Sign the transaction.
-		if (!sign(digest, privkey, &ndata, tmpsignature, &tmprecid)) {
+		if (!sign(ctx, digest, privkey, &ndata, signature, recid)) {
+			secp256k1_context_destroy(ctx);
 			return 0;
 		}
 
 		// Check whether the signiture is canonical.
-		if (is_canonical(tmpsignature)) {
-			tmprecid += 4;  // compressed
-			tmprecid += 27; // compact
+		if (is_canonical(signature)) {
+			*recid += 4;  // compressed
+			*recid += 27; // compact
 			break;
 		}
 
 		ndata++;
 	}
 
-	memcpy(signature, tmpsignature, 64);
-	*recid = tmprecid;
+	secp256k1_context_destroy(ctx);
 	return 1;
 }
 
 static int sign(
+	const secp256k1_context* ctx,
 	const unsigned char *digest,
 	const unsigned char *privkey,
 	const void *ndata,
 	unsigned char *signature,
 	int *recid
 ) {
-	// Prepare a context.
-	secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
-
 	// Prepare a signature.
 	secp256k1_ecdsa_recoverable_signature sig;
 
 	// Sign the digest using the given private key.
 	if (!secp256k1_ecdsa_sign_recoverable(ctx, &sig, digest, privkey, NULL, ndata)) {
-		secp256k1_context_destroy(ctx);
 		return 0;
 	}
 
-	// Serialize.
-	secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, signature, recid, &sig);
+	dump(sig.data, 65);
 
-	// Destroy the context and return succcess.
-	secp256k1_context_destroy(ctx);
+	// Serialize and return success.
+	secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, signature, recid, &sig);
 	return 1;
 }
 

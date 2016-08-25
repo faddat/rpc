@@ -71,8 +71,10 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 
 	sigs := make([][]byte, 0, len(privKeys))
 	for _, cKey := range cKeys {
-		signature := make([]byte, 64)
-		var recid C.int
+		var (
+			signature [64]byte
+			recid     C.int
+		)
 
 		i := C.sign_transaction(
 			(*C.uchar)(cDigest), (*C.uchar)(cKey), (*C.uchar)(&signature[0]), &recid)
@@ -82,7 +84,7 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 
 		sig := make([]byte, 65)
 		sig[0] = byte(recid)
-		copy(sig[1:], signature)
+		copy(sig[1:], signature[:])
 
 		sigs = append(sigs, sig)
 	}
