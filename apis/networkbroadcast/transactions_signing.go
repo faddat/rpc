@@ -94,7 +94,7 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 
 func Verify(tx *database.Transaction, chain *Chain, pubKeys [][]byte) (bool, error) {
 	// Compute the digest, again.
-	digest, err := Digest(tx)
+	digest, err := Digest(tx, chain)
 	if err != nil {
 		return false, err
 	}
@@ -119,7 +119,7 @@ func Verify(tx *database.Transaction, chain *Chain, pubKeys [][]byte) (bool, err
 		}
 
 		recoverParameter := sig[0]
-		sig := sig[1:]
+		sig = sig[1:]
 
 		cSig := C.CBytes(sig)
 		cSigs = append(cSigs, cSig)
@@ -127,10 +127,10 @@ func Verify(tx *database.Transaction, chain *Chain, pubKeys [][]byte) (bool, err
 		var publicKey [33]byte
 
 		code := C.verify_recoverable_signature(
-			(*C.char)(cDigest),
-			(*C.char)(cSig),
+			(*C.uchar)(cDigest),
+			(*C.uchar)(cSig),
 			(C.int)(recoverParameter),
-			(*C.char)(&publicKey[0]),
+			(*C.uchar)(&publicKey[0]),
 		)
 		if code == 1 {
 			pubKeysFound[i] = publicKey[:]
@@ -141,14 +141,6 @@ func Verify(tx *database.Transaction, chain *Chain, pubKeys [][]byte) (bool, err
 		if !bytes.Equal(pubKeysFound[i], pubKeys[i]) {
 			return false, nil
 		}
-	}
-	return true, nil
-}
-
-func verifySignature(pubKey []byte, message []byte, signature []byte) (bool, error) {
-	code := C.verify_signature((*C.char)(cPubKey), (*C.char)(cMessage), (*C.char)(cSignature))
-	if code == 0 {
-		return false, errors.New("verify_signature returned 0")
 	}
 	return true, nil
 }

@@ -120,7 +120,7 @@ int verify_recoverable_signature(
 	// Conver recoverable signature to normal signature.
 	secp256k1_ecdsa_signature normsig;
 	
-	secp256k1_ecdsa_recoverable_signature_convert(ctx, normsig, &sig);
+	secp256k1_ecdsa_recoverable_signature_convert(ctx, &normsig, &sig);
 	
 	// Verify.
 	if (!secp256k1_ecdsa_verify(ctx, &normsig, digest, &pubkey)) {
@@ -129,7 +129,7 @@ int verify_recoverable_signature(
 	}
 
 	// Pass the public key back.
-	int len = 33;
+	size_t len = 33;
 	secp256k1_ec_pubkey_serialize(ctx, rawpubkey, &len, &pubkey, SECP256K1_EC_COMPRESSED);
 	
 	// Clean up.
