@@ -21,8 +21,8 @@ import (
 // #include "signing.h"
 import "C"
 
-func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, error) {
-	var messageBuffer bytes.Buffer
+func Digest(tx *database.Transaction, chain *Chain) ([]byte, error) {
+	var msgBuffer bytes.Buffer
 
 	// Write the chain ID.
 	rawChainID, err := hex.DecodeString(chain.ID)
@@ -30,7 +30,7 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 		return nil, errors.Wrapf(err, "failed to decode chain ID: %v", chain.ID)
 	}
 
-	if _, err := messageBuffer.Write(rawChainID); err != nil {
+	if _, err := msgBuffer.Write(rawChainID); err != nil {
 		return nil, errors.Wrap(err, "failed to write chain ID")
 	}
 
@@ -40,15 +40,23 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 		return nil, err
 	}
 
-	if _, err := messageBuffer.Write(rawTx); err != nil {
+	if _, err := msgBuffer.Write(rawTx); err != nil {
 		return nil, errors.Wrap(err, "failed to write serialized transaction")
 	}
 
 	// Compute the digest.
-	digest := sha256.Sum256(messageBuffer.Bytes())
+	digest := sha256.Sum256(msgBuffer.Bytes())
+	return digest[:], nil
+}
+
+func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, error) {
+	digest, err := Digest(tx, chain)
+	if err != nil {
+		return nil, err
+	}
 
 	// Sign.
-	cDigest := C.CBytes(digest[:])
+	cDigest := C.CBytes(digest)
 	defer C.free(cDigest)
 
 	cKeys := make([]unsafe.Pointer, 0, len(privKeys))
