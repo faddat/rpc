@@ -24,5 +24,5 @@ func GetPublicKey(wif string) ([]byte, error) {
 		return nil, errors.Wrap(err, "failed to decode WIF")
 	}
 
-	return w.PrivKey.PubKey.SerializeCompressed(), nil
+	return w.PrivKey.PubKey().SerializeCompressed(), nil
 }
