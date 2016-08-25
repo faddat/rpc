@@ -91,3 +91,18 @@ static bool is_canonical(const unsigned char *sig) {
 	        !(sig[32] & 0x80) &&
 	        !(sig[32] == 0 && !(sig[33] & 0x80)));
 }
+
+int verify_recoverable_signature(
+	const unsigned char *digest,
+	const unsigned char *signature,
+	int recid,
+	unsigned char *pubkey
+) {
+	// Parse the signature.
+	
+	// Recover the public key.
+	
+	// Conver recoverable signature to normal signature.
+	
+	// Verify.
+}

@@ -8,4 +8,12 @@ int sign_transaction(
 	int *recid
 );
 
+// pubkey is expected to be 33 bytes long so that a compressed public key fits.
+int verify_recoverable_signature(
+	const unsigned char *digest,
+	const unsigned char *signature,
+	int recid,
+	unsigned char *pubkey
+);
+
 #endif
