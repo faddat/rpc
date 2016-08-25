@@ -96,13 +96,43 @@ int verify_recoverable_signature(
 	const unsigned char *digest,
 	const unsigned char *signature,
 	int recid,
-	unsigned char *pubkey
+	unsigned char *rawpubkey
 ) {
+	// Get a context.
+	secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_VERIFY);
+
 	// Parse the signature.
+	secp256k1_ecdsa_recoverable_signature sig;
+
+	if (!secp256k1_ecdsa_recoverable_signature_parse_compact(ctx, &sig, signature, recid)) {
+		secp256k1_context_destroy(ctx);
+		return 0;
+	}
 	
 	// Recover the public key.
+	secp256k1_pubkey pubkey;
+	
+	if (!secp256k1_ecdsa_recover(ctx, &pubkey, &sig, digest)) {
+		secp256k1_context_destroy(ctx);
+		return 0;
+	}
 	
 	// Conver recoverable signature to normal signature.
+	secp256k1_ecdsa_signature normsig;
+	
+	secp256k1_ecdsa_recoverable_signature_convert(ctx, normsig, &sig);
 	
 	// Verify.
+	if (!secp256k1_ecdsa_verify(ctx, &normsig, digest, &pubkey)) {
+		secp256k1_context_destroy(ctx);
+		return 0;
+	}
+
+	// Pass the public key back.
+	int len = 33;
+	secp256k1_ec_pubkey_serialize(ctx, rawpubkey, &len, &pubkey, SECP256K1_EC_COMPRESSED);
+	
+	// Clean up.
+	secp256k1_context_destroy(ctx);
+	return 1;
 }

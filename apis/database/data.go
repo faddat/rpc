@@ -62,6 +62,7 @@ type Transaction struct {
 	RefBlockPrefix types.UInt32
 	Expiration     *types.Time
 	Operations     []*Operation
+	Signatures     []string
 }
 
 func (tx *Transaction) MarshalTransaction(encoder *transaction.Encoder) error {

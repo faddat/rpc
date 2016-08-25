@@ -15,3 +15,8 @@ func Decode(wif string) ([]byte, error) {
 
 	return w.PrivKey.Serialize(), nil
 }
+
+// GetPublicKey returns the public key associated with the given WIF.
+func GetPublicKey(wif string) ([]byte, error) {
+	panic("not implemented")
+}
