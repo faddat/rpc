@@ -4,53 +4,38 @@ import (
 	// Stdlib
 	"encoding/hex"
 	"testing"
-	"time"
 
 	// RPC
-	"github.com/go-steem/rpc/apis/database"
 	"github.com/go-steem/rpc/encoding/wif"
-	"github.com/go-steem/rpc/types"
 )
 
+var wifs = []string{
+	"5JLw5dgQAx6rhZEgNN5C2ds1V47RweGshynFSWFbaMohsYsBvE8",
+}
+
+var privateKeys = make([][]byte, 0, len(wifs))
+
+func init() {
+	for _, v := range wifs {
+		privKey, err := wif.Decode(v)
+		if err != nil {
+			panic(err)
+		}
+		privateKeys = append(privateKeys, privKey)
+	}
+}
+
 func TestTransaction_Sign(t *testing.T) {
-	var (
-		WIF            = "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
-		refBlockNum    = 34294
-		refBlockPrefix = 3707022213
-		expiration     = time.Date(2016, 4, 6, 8, 29, 27, 0, time.UTC)
-	)
+	expected := "207a373c828b872d52a6946d31a22b4530e83a20bf89b4b71e29bbdffb4877c584232297ba3f22929506bf9706b2e67db9f99e517580cfcabeae492e2472d0a0dd"
 
-	tx := database.Transaction{
-		RefBlockNum:    types.UInt16(refBlockNum),
-		RefBlockPrefix: types.UInt32(refBlockPrefix),
-		Expiration:     &types.Time{&expiration},
-		Operations: []*database.Operation{
-			{
-				database.OpTypeVote,
-				&database.VoteOperation{
-					Voter:    "foobara",
-					Author:   "foobarc",
-					Permlink: "foobard",
-					Weight:   1000,
-				},
-			},
-		},
-	}
-
-	privKey, err := wif.Decode(WIF)
+	sigs, err := Sign(&tx, SteemChain, privateKeys)
 	if err != nil {
 		t.Error(err)
 	}
 
-	privKeys := [][]byte{
-		[]byte(privKey),
-	}
+	got := hex.EncodeToString(sigs[0])
 
-	sigs, err := Sign(&tx, SteemChain, privKeys)
-	if err != nil {
-		t.Error(err)
+	if got != expected {
+		t.Errorf("\n\nexpected:\n%v\n\ngot:\n%v\n\n", expected, got)
 	}
-
-	sig := hex.EncodeToString(sigs[0])
-	t.Log(sig)
 }
