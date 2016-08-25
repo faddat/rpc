@@ -78,4 +78,33 @@ func run() (err error) {
 		return err
 	}
 
+	// Prepare the transaction.
+	tx := transactions.NewSignedTransaction(&types.Transaction{
+		RefBlockNum:    transactions.RefBlockNum(props.HeadBlockNumber),
+		RefBlockPrefix: transactions.RefBlockPrefix(props.HeadBlockID),
+		Expiration:     &expiration,
+	})
+
+	tx.PushOperation(&operations.Vote{
+		Voter:    voter,
+		Author:   author,
+		Permlink: permlink,
+		Weight:   10000,
+	})
+
+	tx.PushWIF(wifKey)
+
+	if err := tx.Sign(); err != nil {
+		return err
+	}
+
+	// Broadcast.
+	raw, err := client.NetworkBroadcast.BroadcastTransactionSynchronousRaw(tx.Transaction)
+	if err != nil {
+		return err
+	}
+	fmt.Println("RESPONSE:", string(*raw))
+
+	// Success!
+	return nil
 }
