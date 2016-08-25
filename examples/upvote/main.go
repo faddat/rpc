@@ -80,7 +80,8 @@ func run() (err error) {
 		client.Close()
 	}()
 
-	// Get the props for the transaction.
+	// Get the props to get the head block number and ID
+	// so that we can use that for the transaction.
 	props, err := client.Database.GetDynamicGlobalProperties()
 	if err != nil {
 		return err
