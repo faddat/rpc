@@ -22,14 +22,14 @@ int sign_transaction(
 	unsigned char *signature,
 	int *recid
 ) {
-	int ndata[1] = {0};
+	int ndata = 1;
 
 	unsigned char tmpsignature[64];
 	int tmprecid;
 
 	while (1) {
 		// Sign the transaction.
-		if (!sign(digest, privkey, ndata, tmpsignature, &tmprecid)) {
+		if (!sign(digest, privkey, &ndata, tmpsignature, &tmprecid)) {
 			return 0;
 		}
 
@@ -40,7 +40,7 @@ int sign_transaction(
 			break;
 		}
 
-		ndata[0]++;
+		ndata++;
 	}
 
 	memcpy(signature, tmpsignature, 64);
