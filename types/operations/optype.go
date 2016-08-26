@@ -76,6 +76,7 @@ var opTypes = [...]OpType{
 	TypePOW2,
 }
 
+// opCodes keeps mapping operation type -> operation code.
 var opCodes map[OpType]uint16
 
 func init() {
