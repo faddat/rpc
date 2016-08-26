@@ -1,10 +1,12 @@
-package database
+package operations
 
 import (
+	// Stdlib
 	"encoding/json"
 	"reflect"
 	"strings"
 
+	// Vendor
 	"github.com/pkg/errors"
 )
 
