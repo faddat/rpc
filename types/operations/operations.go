@@ -13,31 +13,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	TypeConvert             = "convert"
-	TypeFeedPublish         = "feed_publish"
-	TypePow                 = "pow"
-	TypeCustomJSON          = "custom_json"
-	TypeAccountCreate       = "account_create"
-	TypeAccountUpdate       = "account_update"
-	TypeTransfer            = "transfer"
-	TypeTransferToVesting   = "transfer_to_vesting"
-	TypeWithdrawVesting     = "withdraw_vesting"
-	TypeAccountWitnessVote  = "account_witness_vote"
-	TypeAccountWitnessProxy = "account_witness_proxy"
-	TypeComment             = "comment"
-	TypeVote                = "vote"
-	TypeLimitOrderCreate    = "limit_order_create"
-	TypeFillOrder           = "fill_order"
-	TypeLimitOrderCancel    = "limit_order_cancel"
-	TypeDeleteComment       = "delete_comment"
-	TypeCommentOptions      = "comment_options"
-)
-
 var opBodyObjects = map[string]interface{}{
 	TypeConvert:             &ConvertOperation{},
 	TypeFeedPublish:         &FeedPublishOperation{},
-	TypePow:                 &PowOperation{},
+	TypePOW:                 &PowOperation{},
 	TypeCustomJSON:          &CustomJSONOperation{},
 	TypeAccountCreate:       &AccountCreateOperation{},
 	TypeAccountUpdate:       &AccountUpdateOperation{},
