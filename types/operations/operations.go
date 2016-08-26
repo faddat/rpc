@@ -13,7 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var opBodyObjects = map[string]interface{}{
+var opBodyObjects = map[OpType]interface{}{
 	TypeConvert:             &ConvertOperation{},
 	TypeFeedPublish:         &FeedPublishOperation{},
 	TypePOW:                 &PowOperation{},
@@ -28,7 +28,6 @@ var opBodyObjects = map[string]interface{}{
 	TypeComment:             &CommentOperation{},
 	TypeVote:                &VoteOperation{},
 	TypeLimitOrderCreate:    &LimitOrderCreateOperation{},
-	TypeFillOrder:           &FillOrderOperation{},
 	TypeLimitOrderCancel:    &LimitOrderCancelOperation{},
 	TypeDeleteComment:       &DeleteCommentOperation{},
 	TypeCommentOptions:      &CommentOptionsOperation{},
@@ -249,7 +248,7 @@ type VoteOperation struct {
 
 func (op *VoteOperation) MarshalTransaction(encoder *transaction.Encoder) error {
 	enc := transaction.NewRollingEncoder(encoder)
-	enc.EncodeUVarint(opCodes[TypeVote])
+	enc.EncodeUVarint(uint64(TypeVote.Code()))
 	enc.Encode(op.Voter)
 	enc.Encode(op.Author)
 	enc.Encode(op.Permlink)
@@ -277,19 +276,6 @@ type LimitOrderCreateOperation struct {
 	MinToReceive string      `json:"min_to_receive"`
 	FillOrKill   bool        `json:"fill_or_kill"`
 	Expiration   *types.Time `json:"expiration"`
-}
-
-// FC_REFLECT( steemit::chain::fill_order_operation,
-//             (owner)
-//             (orderid)
-//             (pays)
-//             (receives) );
-
-type FillOrderOperation struct {
-	Owner    string `json:"owner"`
-	OrderID  string `json:"orderid"`
-	Pays     string `json:"pays"`
-	Receives string `json:"receives"`
 }
 
 // FC_REFLECT( steemit::chain::limit_order_cancel_operation,
@@ -332,7 +318,7 @@ type CommentOptionsOperation struct {
 // Operation represents an operation stored in a transaction.
 type Operation struct {
 	// Type contains the string representation of the operation.
-	Type string
+	Type OpType
 	// Body contains one of the operation objects depending on the type.
 	Body interface{}
 }
@@ -348,7 +334,7 @@ func (op *Operation) UnmarshalJSON(data []byte) error {
 	}
 
 	// Unmarshal opType.
-	var opType string
+	var opType OpType
 	if err := json.Unmarshal(raw[0], &opType); err != nil {
 		return errors.Wrapf(err, "failed to unmarshal Operation.Type: %v", string(raw[0]))
 	}

@@ -4,7 +4,7 @@ package operations
 type OpType string
 
 // Code returns the operation code associated with the given operation type.
-func (kind OpType) Code() uint64 {
+func (kind OpType) Code() uint16 {
 	return opCodes[kind]
 }
 
@@ -28,7 +28,7 @@ const (
 	TypeReportOverProduction    OpType = "report_over_production"
 	TypeDeleteComment           OpType = "delete_comment"
 	TypeCustomJSON              OpType = "custom_json"
-	TypeCommentOptions          OpType = "comment"
+	TypeCommentOptions          OpType = "comment_options"
 	TypeSetWithdrawVestingRoute OpType = "set_withdraw_vesting_route"
 	TypeLimitOrderCreate2       OpType = "limit_order_create2"
 	TypeChallengeAuthority      OpType = "challenge_authority"
@@ -76,11 +76,11 @@ var opTypes = [...]OpType{
 	TypePOW2,
 }
 
-var opCodes map[OpType]uint64
+var opCodes map[OpType]uint16
 
 func init() {
-	opCodes = make(map[OpType]uint64, len(opTypes))
+	opCodes = make(map[OpType]uint16, len(opTypes))
 	for i, opType := range opTypes {
-		opCodes[opType] = i
+		opCodes[opType] = uint16(i)
 	}
 }
