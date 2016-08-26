@@ -3,7 +3,6 @@ package operations
 import (
 	// Stdlib
 	"encoding/json"
-	"reflect"
 
 	// RPC
 	"github.com/go-steem/rpc/encoding/transaction"
@@ -313,46 +312,6 @@ type CommentOptionsOperation struct {
 	AllowVotes           bool          `json:"allow_votes"`
 	AllowCurationRewards bool          `json:"allow_curation_rewards"`
 	Extensions           []interface{} `json:"extensions"`
-}
-
-// Operation represents an operation stored in a transaction.
-type Operation struct {
-	// Type contains the string representation of the operation.
-	Type OpType
-	// Body contains one of the operation objects depending on the type.
-	Body interface{}
-}
-
-func (op *Operation) UnmarshalJSON(data []byte) error {
-	// The operation object is [opType, opBody].
-	raw := make([]json.RawMessage, 2)
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
-	}
-	if len(raw) != 2 {
-		return errors.Errorf("invalid operation object: %v\n", string(data))
-	}
-
-	// Unmarshal opType.
-	var opType OpType
-	if err := json.Unmarshal(raw[0], &opType); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal Operation.Type: %v", string(raw[0]))
-	}
-
-	// Unmarshal opBody.
-	bodyTemplate, ok := opBodyObjects[opType]
-	if !ok {
-		bodyTemplate = map[string]interface{}{}
-	}
-	opBody := reflect.New(reflect.Indirect(reflect.ValueOf(bodyTemplate)).Type()).Interface()
-	if err := json.Unmarshal(raw[1], opBody); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal Operation.Body: %v", string(raw[1]))
-	}
-
-	// Update fields.
-	op.Type = opType
-	op.Body = opBody
-	return nil
 }
 
 type Authority struct {
