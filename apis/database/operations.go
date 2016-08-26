@@ -273,27 +273,13 @@ type VoteOperation struct {
 }
 
 func (op *VoteOperation) MarshalTransaction(encoder *transaction.Encoder) error {
-	if err := encoder.EncodeUVarint(opCodes[OpTypeVote]); err != nil {
-		return err
-	}
-
-	if err := encoder.Encode(op.Voter); err != nil {
-		return err
-	}
-
-	if err := encoder.Encode(op.Author); err != nil {
-		return err
-	}
-
-	if err := encoder.Encode(op.Permlink); err != nil {
-		return err
-	}
-
-	if err := encoder.Encode(op.Weight); err != nil {
-		return err
-	}
-
-	return nil
+	enc := transaction.NewRollingEncoder(encoder)
+	enc.EncodeUVarint(opCodes[OpTypeVote])
+	enc.Encode(op.Voter)
+	enc.Encode(op.Author)
+	enc.Encode(op.Permlink)
+	enc.Encode(op.Weight)
+	return enc.Err()
 }
 
 // FC_REFLECT( steemit::chain::custom_operation,
