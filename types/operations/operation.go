@@ -14,7 +14,7 @@ import (
 
 // dataObjects keeps mapping operation type -> operation data object.
 // This is used later on to unmarshal operation data based on the operation type.
-var dataObjects = map[OpType]interface{}{
+var dataObjects = map[OpType]Operation{
 	TypeVote:              &VoteOperation{},
 	TypeComment:           &CommentOperation{},
 	TypeTransfer:          &TransferOperation{},
@@ -49,28 +49,33 @@ var dataObjects = map[OpType]interface{}{
 }
 
 // Operation represents an operation stored in a transaction.
-type Operation struct {
-	// Type contains the operation type as present in the operation object, element [0].
-	Type OpType
+type Operation interface {
+	// Type returns the operation type as present in the operation object, element [0].
+	Type() OpType
 
-	// Data contains the operation data as present in the operation object, element [1].
+	// Data returns the operation data as present in the operation object, element [1].
 	//
 	// When the operation type is known to this package, this field contains
 	// the operation data object associated with the given operation type,
 	// e.g. Type is TypeVote -> Data contains *VoteOperation.
 	// Otherwise this field contains raw JSON (type *json.RawMessage).
-	Data interface{}
+	Data() interface{}
 }
 
-func (op *Operation) MarshalJSON() ([]byte, error) {
+// OperationWrapper wraps an Operation and implements JSON marshalling and unmarshalling logic.
+type OperationWrapper struct {
+	Operation
+}
+
+func (op *OperationWrapper) MarshalJSON() ([]byte, error) {
 	tuple := []interface{}{
-		op.Type,
-		op.Data,
+		op.Type(),
+		op.Data(),
 	}
 	return json.Marshal(typle)
 }
 
-func (op *Operation) UnmarshalJSON(data []byte) error {
+func (op *OperationWrapper) UnmarshalJSON(data []byte) error {
 	// The operation object is [opType, opBody].
 	raw := make([]*json.RawMessage, 2)
 	if err := json.Unmarshal(data, &raw); err != nil {
@@ -87,7 +92,7 @@ func (op *Operation) UnmarshalJSON(data []byte) error {
 	}
 
 	// Unmarshal the data.
-	var opData interface{}
+	var opData Operation
 	template, ok := dataObjects[opType]
 	if ok {
 		opData = reflect.New(reflect.Indirect(reflect.ValueOf(template)).Type()).Interface()
@@ -99,7 +104,5 @@ func (op *Operation) UnmarshalJSON(data []byte) error {
 	}
 
 	// Update fields.
-	op.Type = opType
-	op.Data = opData
 	return nil
 }

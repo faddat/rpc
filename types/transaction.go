@@ -39,6 +39,7 @@ func (tx *Transaction) MarshalTransaction(encoder *transaction.Encoder) error {
 	return enc.Err()
 }
 
-func (tx *Transaction) PushOperation(op operations.Interface) {
-	tx.Operations = append(tx.Operations, &operations.Operation{op})
+// PushOperation can be used to add an operation into the transaction.
+func (tx *Transaction) PushOperation(op operations.Operation) {
+	tx.Operations = append(tx.Operations, &operations.OperationWrapper{op})
 }
