@@ -62,6 +62,14 @@ type Operation struct {
 	Data interface{}
 }
 
+func (op *Operation) MarshalJSON() ([]byte, error) {
+	tuple := []interface{}{
+		op.Type,
+		op.Data,
+	}
+	return json.Marshal(typle)
+}
+
 func (op *Operation) UnmarshalJSON(data []byte) error {
 	// The operation object is [opType, opBody].
 	raw := make([]*json.RawMessage, 2)
