@@ -38,3 +38,7 @@ func (tx *Transaction) MarshalTransaction(encoder *transaction.Encoder) error {
 
 	return enc.Err()
 }
+
+func (tx *Transaction) PushOperation(op operations.Interface) {
+	tx.Operations = append(tx.Operations, &operations.Operation{op})
+}
