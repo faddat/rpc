@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"reflect"
 
+	// RPC
+	"github.com/go-steem/rpc/types/operations/customjson"
+
 	// Vendor
 	"github.com/pkg/errors"
 )
@@ -12,23 +15,37 @@ import (
 // dataObjects keeps mapping operation type -> operation data object.
 // This is used later on to unmarshal operation data based on the operation type.
 var dataObjects = map[OpType]interface{}{
-	TypeConvert:             &ConvertOperation{},
-	TypeFeedPublish:         &FeedPublishOperation{},
-	TypePOW:                 &PowOperation{},
-	TypeCustomJSON:          &CustomJSONOperation{},
-	TypeAccountCreate:       &AccountCreateOperation{},
-	TypeAccountUpdate:       &AccountUpdateOperation{},
-	TypeTransfer:            &TransferOperation{},
-	TypeTransferToVesting:   &TransferToVestingOperation{},
-	TypeWithdrawVesting:     &WithdrawVestingOperation{},
-	TypeAccountWitnessVote:  &AccountWitnessVoteOperation{},
-	TypeAccountWitnessProxy: &AccountWitnessProxyOperation{},
-	TypeComment:             &CommentOperation{},
-	TypeVote:                &VoteOperation{},
-	TypeLimitOrderCreate:    &LimitOrderCreateOperation{},
-	TypeLimitOrderCancel:    &LimitOrderCancelOperation{},
-	TypeDeleteComment:       &DeleteCommentOperation{},
-	TypeCommentOptions:      &CommentOptionsOperation{},
+	TypeVote:                    &VoteOperation{},
+	TypeComment:                 &CommentOperation{},
+	TypeTransfer:                &TransferOperation{},
+	TypeTransferToVesting:       &TransferToVestingOperation{},
+	TypeWithdrawVesting:         &WithdrawVestingOperation{},
+	TypeLimitOrderCreate:        &LimitOrderCreateOperation{},
+	TypeLimitOrderCancel:        &LimitOrderCancelOperation{},
+	TypeFeedPublish:             &FeedPublishOperation{},
+	TypeConvert:                 &ConvertOperation{},
+	TypeAccountCreate:           &AccountCreateOperation{},
+	TypeAccountUpdate:           &AccountUpdateOperation{},
+	TypeWitnessUpdate:           &WitnessUpdateOperation{},
+	TypeAccountWitnessVote:      &AccountWitnessVoteOperation{},
+	TypeAccountWitnessProxy:     &AccountWitnessProxyOperation{},
+	TypePOW:                     &POWOperation{},
+	TypeCustom:                  &CustomOperation{},
+	TypeReportOverProduction:    &ReportOverProductionOperation{},
+	TypeDeleteComment:           &DeleteCommentOperation{},
+	TypeCustomJSON:              &customjson.Operation{},
+	TypeCommentOptions:          &CommentOptionsOperation{},
+	TypeSetWithdrawVestingRoute: &SetWithdrawVestingRouteOperation{},
+	TypeLimitOrderCreate2:       &LimitOrderCreate2Operation{},
+	TypeChallengeAuthority:      &ChallengeAuthorityOperation{},
+	TypeProveAuthority:          &ProveAuthorityOperation{},
+	TypeRequestAccountRecovery:  &RequestAccountRecoveryOperation{},
+	TypeRecoverAccount:          &RecoverAccountOperation{},
+	TypeChangeRecoveryAccount:   &ChangeRecoverAccountOperation{},
+	TypeEscrowTransfer:          &EscrowTransferOperation{},
+	TypeEscrowDispute:           &EscrowDisputeOperation{},
+	TypeEscrowRelease:           &EescrowReleaseOperation{},
+	TypePOW2:                    &POW2Operation{},
 }
 
 // Operation represents an operation stored in a transaction.
