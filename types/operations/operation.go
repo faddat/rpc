@@ -72,7 +72,7 @@ func (op *OperationWrapper) MarshalJSON() ([]byte, error) {
 		op.Type(),
 		op.Data(),
 	}
-	return json.Marshal(typle)
+	return json.Marshal(tuple)
 }
 
 func (op *OperationWrapper) UnmarshalJSON(data []byte) error {
@@ -95,14 +95,18 @@ func (op *OperationWrapper) UnmarshalJSON(data []byte) error {
 	var opData Operation
 	template, ok := dataObjects[opType]
 	if ok {
-		opData = reflect.New(reflect.Indirect(reflect.ValueOf(template)).Type()).Interface()
+		opData = reflect.New(
+			reflect.Indirect(reflect.ValueOf(template)).Type(),
+		).Interface().(Operation)
+
 		if err := json.Unmarshal(*raw[1], opData); err != nil {
 			return errors.Wrapf(err, "failed to unmarshal Operation.Data: %v", string(*raw[1]))
 		}
 	} else {
-		opData = raw[1]
+		opData = &UnknownOperation{opType, raw[1]}
 	}
 
 	// Update fields.
+	op.Operation = template
 	return nil
 }
