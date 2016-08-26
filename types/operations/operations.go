@@ -12,26 +12,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-var opBodyObjects = map[OpType]interface{}{
-	TypeConvert:             &ConvertOperation{},
-	TypeFeedPublish:         &FeedPublishOperation{},
-	TypePOW:                 &PowOperation{},
-	TypeCustomJSON:          &CustomJSONOperation{},
-	TypeAccountCreate:       &AccountCreateOperation{},
-	TypeAccountUpdate:       &AccountUpdateOperation{},
-	TypeTransfer:            &TransferOperation{},
-	TypeTransferToVesting:   &TransferToVestingOperation{},
-	TypeWithdrawVesting:     &WithdrawVestingOperation{},
-	TypeAccountWitnessVote:  &AccountWitnessVoteOperation{},
-	TypeAccountWitnessProxy: &AccountWitnessProxyOperation{},
-	TypeComment:             &CommentOperation{},
-	TypeVote:                &VoteOperation{},
-	TypeLimitOrderCreate:    &LimitOrderCreateOperation{},
-	TypeLimitOrderCancel:    &LimitOrderCancelOperation{},
-	TypeDeleteComment:       &DeleteCommentOperation{},
-	TypeCommentOptions:      &CommentOptionsOperation{},
-}
-
 // FC_REFLECT( steemit::chain::report_over_production_operation,
 //             (reporter)
 //             (first_block)
@@ -70,7 +50,7 @@ type FeedPublishOperation struct {
 //             (signature)
 //             (work) )
 
-type Pow struct {
+type POW struct {
 	Worker    string `json:"worker"`
 	Input     string `json:"input"`
 	Signature string `json:"signature"`
@@ -95,11 +75,11 @@ type ChainProperties struct {
 //             (work)
 //             (props) )
 
-type PowOperation struct {
+type POWOperation struct {
 	WorkerAccount string           `json:"worker_account"`
 	BlockID       string           `json:"block_id"`
 	Nonce         *types.Int       `json:"nonce"`
-	Work          *Pow             `json:"work"`
+	Work          *POW             `json:"work"`
 	Props         *ChainProperties `json:"props"`
 }
 

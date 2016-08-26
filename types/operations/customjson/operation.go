@@ -1,4 +1,4 @@
-package operations
+package customjson
 
 import (
 	// Stdlib
@@ -24,14 +24,15 @@ var customJSONOpBodyObjects = map[string]interface{}{
 //             (id)
 //             (json) )
 
-type CustomJSONOperation struct {
+// Operation represents custom_json operation data.
+type Operation struct {
 	RequiredAuths        []string `json:"required_auths"`
 	RequiredPostingAuths []string `json:"required_posting_auths"`
 	ID                   string   `json:"id"`
 	JSON                 string   `json:"json"`
 }
 
-func (op *CustomJSONOperation) UnmarshalBody() (interface{}, error) {
+func (op *Operation) UnmarshalBody() (interface{}, error) {
 	// Get the corresponding operation object template.
 	bodyTemplate, ok := customJSONOpBodyObjects[op.ID]
 	if !ok {
