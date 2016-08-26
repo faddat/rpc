@@ -1,4 +1,4 @@
-package typestest
+package types
 
 import (
 	// Stdlib

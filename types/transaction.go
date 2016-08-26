@@ -3,6 +3,7 @@ package types
 import (
 	// RPC
 	"github.com/go-steem/rpc/encoding/transaction"
+	"github.com/go-steem/rpc/types/operations"
 )
 
 // Transaction represents a blockchain transaction.
@@ -10,7 +11,7 @@ type Transaction struct {
 	RefBlockNum    UInt16
 	RefBlockPrefix UInt32
 	Expiration     *Time
-	Operations     []*Operation
+	Operations     []*operations.Operation
 	Signatures     []string
 }
 
