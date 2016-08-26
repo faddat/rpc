@@ -26,6 +26,7 @@ type Client struct {
 	Follow *follow.API
 
 	// NetworkBroadcast represents network_broadcast_api.
+	NetworkBroadcast *networkbroadcast.API
 }
 
 // NewClient creates a new RPC client that use the given CallCloser internally.
