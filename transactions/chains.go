@@ -1,4 +1,4 @@
-package networkbroadcast
+package transactions
 
 type Chain struct {
 	ID string

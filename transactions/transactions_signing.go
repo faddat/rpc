@@ -10,7 +10,8 @@ import (
 	"unsafe"
 
 	// RPC
-	"github.com/go-steem/rpc/apis/database"
+	"github.com/go-steem/rpc/encoding/transaction"
+	"github.com/go-steem/rpc/types"
 
 	// Vendor
 	"github.com/pkg/errors"
@@ -21,7 +22,18 @@ import (
 // #include "signing.h"
 import "C"
 
-func Digest(tx *database.Transaction, chain *Chain) ([]byte, error) {
+func Serialize(tx *types.Transaction) ([]byte, error) {
+	var b bytes.Buffer
+	encoder := transaction.NewEncoder(&b)
+
+	if err := tx.MarshalTransaction(encoder); err != nil {
+		return nil, err
+	}
+
+	return b.Bytes(), nil
+}
+
+func Digest(tx *types.Transaction, chain *Chain) ([]byte, error) {
 	var msgBuffer bytes.Buffer
 
 	// Write the chain ID.
@@ -49,7 +61,7 @@ func Digest(tx *database.Transaction, chain *Chain) ([]byte, error) {
 	return digest[:], nil
 }
 
-func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, error) {
+func Sign(tx *types.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, error) {
 	digest, err := Digest(tx, chain)
 	if err != nil {
 		return nil, err
@@ -92,7 +104,7 @@ func Sign(tx *database.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, 
 	return sigs, nil
 }
 
-func Verify(tx *database.Transaction, chain *Chain, pubKeys [][]byte) (bool, error) {
+func Verify(tx *types.Transaction, chain *Chain, pubKeys [][]byte) (bool, error) {
 	// Compute the digest, again.
 	digest, err := Digest(tx, chain)
 	if err != nil {

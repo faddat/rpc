@@ -6,10 +6,6 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 
-	// RPC
-	"github.com/go-steem/rpc/apis/database"
-	"github.com/go-steem/rpc/encoding/transaction"
-
 	// Vendor
 	"github.com/pkg/errors"
 )
