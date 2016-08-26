@@ -14,49 +14,45 @@ import (
 )
 
 const (
-	OpTypeConvert             = "convert"
-	OpTypeFeedPublish         = "feed_publish"
-	OpTypePow                 = "pow"
-	OpTypeCustomJSON          = "custom_json"
-	OpTypeAccountCreate       = "account_create"
-	OpTypeAccountUpdate       = "account_update"
-	OpTypeTransfer            = "transfer"
-	OpTypeTransferToVesting   = "transfer_to_vesting"
-	OpTypeWithdrawVesting     = "withdraw_vesting"
-	OpTypeAccountWitnessVote  = "account_witness_vote"
-	OpTypeAccountWitnessProxy = "account_witness_proxy"
-	OpTypeComment             = "comment"
-	OpTypeVote                = "vote"
-	OpTypeLimitOrderCreate    = "limit_order_create"
-	OpTypeFillOrder           = "fill_order"
-	OpTypeLimitOrderCancel    = "limit_order_cancel"
-	OpTypeDeleteComment       = "delete_comment"
-	OpTypeCommentOptions      = "comment_options"
+	TypeConvert             = "convert"
+	TypeFeedPublish         = "feed_publish"
+	TypePow                 = "pow"
+	TypeCustomJSON          = "custom_json"
+	TypeAccountCreate       = "account_create"
+	TypeAccountUpdate       = "account_update"
+	TypeTransfer            = "transfer"
+	TypeTransferToVesting   = "transfer_to_vesting"
+	TypeWithdrawVesting     = "withdraw_vesting"
+	TypeAccountWitnessVote  = "account_witness_vote"
+	TypeAccountWitnessProxy = "account_witness_proxy"
+	TypeComment             = "comment"
+	TypeVote                = "vote"
+	TypeLimitOrderCreate    = "limit_order_create"
+	TypeFillOrder           = "fill_order"
+	TypeLimitOrderCancel    = "limit_order_cancel"
+	TypeDeleteComment       = "delete_comment"
+	TypeCommentOptions      = "comment_options"
 )
 
 var opBodyObjects = map[string]interface{}{
-	OpTypeConvert:             &ConvertOperation{},
-	OpTypeFeedPublish:         &FeedPublishOperation{},
-	OpTypePow:                 &PowOperation{},
-	OpTypeCustomJSON:          &CustomJSONOperation{},
-	OpTypeAccountCreate:       &AccountCreateOperation{},
-	OpTypeAccountUpdate:       &AccountUpdateOperation{},
-	OpTypeTransfer:            &TransferOperation{},
-	OpTypeTransferToVesting:   &TransferToVestingOperation{},
-	OpTypeWithdrawVesting:     &WithdrawVestingOperation{},
-	OpTypeAccountWitnessVote:  &AccountWitnessVoteOperation{},
-	OpTypeAccountWitnessProxy: &AccountWitnessProxyOperation{},
-	OpTypeComment:             &CommentOperation{},
-	OpTypeVote:                &VoteOperation{},
-	OpTypeLimitOrderCreate:    &LimitOrderCreateOperation{},
-	OpTypeFillOrder:           &FillOrderOperation{},
-	OpTypeLimitOrderCancel:    &LimitOrderCancelOperation{},
-	OpTypeDeleteComment:       &DeleteCommentOperation{},
-	OpTypeCommentOptions:      &CommentOptionsOperation{},
-}
-
-var opCodes = map[string]uint64{
-	OpTypeVote: 0,
+	TypeConvert:             &ConvertOperation{},
+	TypeFeedPublish:         &FeedPublishOperation{},
+	TypePow:                 &PowOperation{},
+	TypeCustomJSON:          &CustomJSONOperation{},
+	TypeAccountCreate:       &AccountCreateOperation{},
+	TypeAccountUpdate:       &AccountUpdateOperation{},
+	TypeTransfer:            &TransferOperation{},
+	TypeTransferToVesting:   &TransferToVestingOperation{},
+	TypeWithdrawVesting:     &WithdrawVestingOperation{},
+	TypeAccountWitnessVote:  &AccountWitnessVoteOperation{},
+	TypeAccountWitnessProxy: &AccountWitnessProxyOperation{},
+	TypeComment:             &CommentOperation{},
+	TypeVote:                &VoteOperation{},
+	TypeLimitOrderCreate:    &LimitOrderCreateOperation{},
+	TypeFillOrder:           &FillOrderOperation{},
+	TypeLimitOrderCancel:    &LimitOrderCancelOperation{},
+	TypeDeleteComment:       &DeleteCommentOperation{},
+	TypeCommentOptions:      &CommentOptionsOperation{},
 }
 
 // FC_REFLECT( steemit::chain::report_over_production_operation,
@@ -274,7 +270,7 @@ type VoteOperation struct {
 
 func (op *VoteOperation) MarshalTransaction(encoder *transaction.Encoder) error {
 	enc := transaction.NewRollingEncoder(encoder)
-	enc.EncodeUVarint(opCodes[OpTypeVote])
+	enc.EncodeUVarint(opCodes[TypeVote])
 	enc.Encode(op.Voter)
 	enc.Encode(op.Author)
 	enc.Encode(op.Permlink)
