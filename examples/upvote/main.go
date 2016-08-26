@@ -1,6 +1,7 @@
 package main
 
 import (
+	// Stdlib
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -11,11 +12,16 @@ import (
 	"syscall"
 	"time"
 
+	// RPC
 	"github.com/go-steem/rpc"
 	"github.com/go-steem/rpc/apis/database"
+	"github.com/go-steem/rpc/transactions"
 	"github.com/go-steem/rpc/transports/websocket"
+	"github.com/go-steem/rpc/types/operations"
 
+	// Vendor
 	"github.com/pkg/errors"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
@@ -38,8 +44,8 @@ func run() (err error) {
 	}
 	voter, author, permlink := args[0], args[1], args[2]
 
-	// Read WIF.
-	wifKey, err := readWIF()
+	// Prompt for WIF.
+	wifKey, err := promptWIF()
 	if err != nil {
 		return err
 	}
@@ -117,11 +123,11 @@ func run() (err error) {
 	return nil
 }
 
-func readWIF() (string, error) {
-	content, err := ioutil.ReadFile("wif.txt")
+func promptWIF(accountName string) (string, error) {
+	fmt.Printf("Please insert WIF for account @%v: ", accountName)
+	passwd, err := terminal.ReadPassword(syscall.Stdin)
 	if err != nil {
-		return "", errors.Wrap(err, "failed to read wif.txt")
+		return "", errors.Wrap(err, "failed to read WIF from the terminal")
 	}
-
-	return strings.TrimSpace(string(content)), nil
+	return string(passwd), nil
 }
