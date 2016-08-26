@@ -1,6 +1,6 @@
 // +build !nosigning
 
-package networkbroadcast
+package transactions
 
 import (
 	// Stdlib

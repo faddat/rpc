@@ -1,4 +1,4 @@
-package networkbroadcast
+package transactions
 
 import (
 	// Stdlib

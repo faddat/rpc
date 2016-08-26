@@ -57,18 +57,6 @@ type Block struct {
 	Transactions          []*Transaction  `json:"transactions"`
 }
 
-type Transaction struct {
-	RefBlockNum    types.UInt16
-	RefBlockPrefix types.UInt32
-	Expiration     *types.Time
-	Operations     []*Operation
-	Signatures     []string
-}
-
-func (tx *Transaction) MarshalTransaction(encoder *transaction.Encoder) error {
-	return nil
-}
-
 type Content struct {
 	Id                      *types.ID        `json:"id"`
 	RootTitle               string           `json:"root_title"`
