@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	CustomJSONOperationIDFollow = "follow"
+	TypeFollow = "follow"
 )
 
-var customJSONOpBodyObjects = map[string]interface{}{
-	CustomJSONOperationIDFollow: &FollowOperation{},
+var dataObjects = map[string]interface{}{
+	TypeFollow: &FollowOperation{},
 }
 
 // FC_REFLECT( steemit::chain::custom_json_operation,
@@ -32,27 +32,21 @@ type Operation struct {
 	JSON                 string   `json:"json"`
 }
 
-func (op *Operation) UnmarshalBody() (interface{}, error) {
-	// Get the corresponding operation object template.
-	bodyTemplate, ok := customJSONOpBodyObjects[op.ID]
+func (op *Operation) UnmarshalData() (interface{}, error) {
+	// Get the corresponding data object template.
+	template, ok := dataObjects[op.ID]
 	if !ok {
-		// In case there is no corresponding template, return unquoted data.
-		return op.JSON, nil
+		// In case there is no corresponding template, return nil.
+		return nil, nil
 	}
 
 	// Clone the template.
-	body := reflect.New(reflect.Indirect(reflect.ValueOf(bodyTemplate)).Type()).Interface()
+	opData := reflect.New(reflect.Indirect(reflect.ValueOf(template)).Type()).Interface()
 
-	// Unmarshal into the new object instance.
-	if err := json.NewDecoder(strings.NewReader(op.JSON)).Decode(body); err != nil {
-		return nil, errors.Wrap(err, "failed to unmarshal CustomJSONOperation.JSON")
+	// Unmarshal into the newly created data object instance.
+	if err := json.NewDecoder(strings.NewReader(op.JSON)).Decode(opData); err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal custom_json operation data")
 	}
 
-	return body, nil
-}
-
-type FollowOperation struct {
-	Follower  string   `json:"follower"`
-	Following string   `json:"following"`
-	What      []string `json:"what"`
+	return opData, nil
 }
