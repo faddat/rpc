@@ -11,6 +11,7 @@ import (
 
 	// RPC
 	"github.com/go-steem/rpc"
+	"github.com/go-steem/rpc/encoding/wif"
 	"github.com/go-steem/rpc/transactions"
 	"github.com/go-steem/rpc/transports/websocket"
 	"github.com/go-steem/rpc/types"
@@ -107,9 +108,14 @@ func run() (err error) {
 		Weight:   10000,
 	})
 
-	keys := []string{wifKey}
+	// Sign.
+	privKey, err := wif.Decode(wifKey)
+	if err != nil {
+		return err
+	}
+	privKeys := [][]byte{privKey}
 
-	if err := tx.Sign(keys, transactions.SteemChain); err != nil {
+	if err := tx.Sign(privKeys, transactions.SteemChain); err != nil {
 		return err
 	}
 

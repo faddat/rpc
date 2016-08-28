@@ -69,10 +69,10 @@ func (tx *SignedTransaction) Digest(chain *Chain) ([]byte, error) {
 	return digest[:], nil
 }
 
-func (tx *SignedTransaction) Sign(privKeys [][]byte, chain *Chain) ([][]byte, error) {
+func (tx *SignedTransaction) Sign(privKeys [][]byte, chain *Chain) error {
 	digest, err := tx.Digest(chain)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Sign.
@@ -99,7 +99,7 @@ func (tx *SignedTransaction) Sign(privKeys [][]byte, chain *Chain) ([][]byte, er
 		code := C.sign_transaction(
 			(*C.uchar)(cDigest), (*C.uchar)(cKey), (*C.uchar)(&signature[0]), &recid)
 		if code == 0 {
-			return nil, errors.New("sign_transaction returned 0")
+			return errors.New("sign_transaction returned 0")
 		}
 
 		sig := make([]byte, 65)
@@ -109,7 +109,14 @@ func (tx *SignedTransaction) Sign(privKeys [][]byte, chain *Chain) ([][]byte, er
 		sigs = append(sigs, sig)
 	}
 
-	return sigs, nil
+	// Set the signature array in the transaction.
+	sigsHex := make([]string, 0, len(sigs))
+	for _, sig := range sigs {
+		sigsHex = append(sigsHex, hex.EncodeToString(sig))
+	}
+
+	tx.Transaction.Signatures = sigsHex
+	return nil
 }
 
 func (tx *SignedTransaction) Verify(pubKeys [][]byte, chain *Chain) (bool, error) {
