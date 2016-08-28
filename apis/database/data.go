@@ -33,7 +33,7 @@ type DynamicGlobalProperties struct {
 	LastIrreversibleBlockNum uint32      `json:"last_irreversible_block_num"`
 	TotalVestingShares       string      `json:"total_vesting_shares"`
 	TotalVersingFundSteem    string      `json:"total_vesting_fund_steem"`
-	HeadBlockId              string      `json:"head_block_id"`
+	HeadBlockID              string      `json:"head_block_id"`
 	VirtualSupply            string      `json:"virtual_supply"`
 	ConfidentialSupply       string      `json:"confidential_supply"`
 	ConfidentialSBDSupply    string      `json:"confidential_sbd_supply"`
