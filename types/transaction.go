@@ -10,11 +10,11 @@ import (
 
 // Transaction represents a blockchain transaction.
 type Transaction struct {
-	RefBlockNum    UInt16
-	RefBlockPrefix UInt32
-	Expiration     *Time
-	Operations     Operations
-	Signatures     []string
+	RefBlockNum    UInt16     `json:"ref_block_num"`
+	RefBlockPrefix UInt32     `json:"ref_block_prefix"`
+	Expiration     *Time      `json:"expiration"`
+	Operations     Operations `json:"operations"`
+	Signatures     []string   `json:"signatures"`
 }
 
 // MarshalTransaction implements transaction.Marshaller interface.

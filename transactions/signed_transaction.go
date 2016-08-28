@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"time"
 	"unsafe"
 
 	// RPC
@@ -27,6 +28,11 @@ type SignedTransaction struct {
 }
 
 func NewSignedTransaction(tx *types.Transaction) *SignedTransaction {
+	if tx.Expiration == nil {
+		expiration := time.Now().Add(30 * time.Second)
+		tx.Expiration = &types.Time{&expiration}
+	}
+
 	return &SignedTransaction{tx}
 }
 

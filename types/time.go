@@ -28,5 +28,5 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 }
 
 func (t *Time) MarshalTransaction(encoder *transaction.Encoder) error {
-	return encoder.Encode(uint32(t.Unix()))
+	return encoder.Encode(uint32(t.Time.Unix()))
 }
