@@ -1,4 +1,4 @@
-package customjson
+package types
 
 type FollowOperation struct {
 	Follower  string   `json:"follower"`

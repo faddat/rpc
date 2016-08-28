@@ -1,4 +1,4 @@
-package customjson
+package types
 
 import (
 	// Stdlib
@@ -14,7 +14,7 @@ const (
 	TypeFollow = "follow"
 )
 
-var dataObjects = map[string]interface{}{
+var customJSONDataObjects = map[string]interface{}{
 	TypeFollow: &FollowOperation{},
 }
 
@@ -24,17 +24,25 @@ var dataObjects = map[string]interface{}{
 //             (id)
 //             (json) )
 
-// Operation represents custom_json operation data.
-type Operation struct {
+// CustomJSONOperation represents custom_json operation data.
+type CustomJSONOperation struct {
 	RequiredAuths        []string `json:"required_auths"`
 	RequiredPostingAuths []string `json:"required_posting_auths"`
 	ID                   string   `json:"id"`
 	JSON                 string   `json:"json"`
 }
 
-func (op *Operation) UnmarshalData() (interface{}, error) {
+func (op *CustomJSONOperation) Type() OpType {
+	return TypeCustomJSON
+}
+
+func (op *CustomJSONOperation) Data() interface{} {
+	return op
+}
+
+func (op *CustomJSONOperation) UnmarshalData() (interface{}, error) {
 	// Get the corresponding data object template.
-	template, ok := dataObjects[op.ID]
+	template, ok := customJSONDataObjects[op.ID]
 	if !ok {
 		// In case there is no corresponding template, return nil.
 		return nil, nil

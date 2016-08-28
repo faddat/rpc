@@ -1,4 +1,4 @@
-package simpletypes
+package types
 
 import (
 	"encoding/json"

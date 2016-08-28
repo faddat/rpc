@@ -1,12 +1,9 @@
-package operations
+package types
 
 import (
 	// Stdlib
 	"encoding/json"
 	"reflect"
-
-	// RPC
-	"github.com/go-steem/rpc/types/operations/customjson"
 
 	// Vendor
 	"github.com/pkg/errors"
@@ -33,7 +30,7 @@ var dataObjects = map[OpType]Operation{
 	// TypeCustom:           &CustomOperation{},
 	TypeReportOverProduction: &ReportOverProductionOperation{},
 	TypeDeleteComment:        &DeleteCommentOperation{},
-	TypeCustomJSON:           &customjson.Operation{},
+	TypeCustomJSON:           &CustomJSONOperation{},
 	TypeCommentOptions:       &CommentOptionsOperation{},
 	// TypeSetWithdrawVestingRoute: &SetWithdrawVestingRouteOperation{},
 	// TypeLimitOrderCreate2:       &LimitOrderCreate2Operation{},

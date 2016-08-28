@@ -1,4 +1,4 @@
-package operations
+package types
 
 // OpType represents a Steem operation type, i.e. vote, comment, pow and so on.
 type OpType string

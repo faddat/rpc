@@ -1,4 +1,4 @@
-package operations
+package types
 
 import (
 	// Stdlib
@@ -6,7 +6,6 @@ import (
 
 	// RPC
 	"github.com/go-steem/rpc/encoding/transaction"
-	"github.com/go-steem/rpc/types/simpletypes"
 
 	// Vendor
 	"github.com/pkg/errors"
@@ -102,7 +101,7 @@ type ChainProperties struct {
 type POWOperation struct {
 	WorkerAccount string           `json:"worker_account"`
 	BlockID       string           `json:"block_id"`
-	Nonce         *simpletypes.Int `json:"nonce"`
+	Nonce         *Int             `json:"nonce"`
 	Work          *POW             `json:"work"`
 	Props         *ChainProperties `json:"props"`
 }
@@ -315,10 +314,10 @@ func (op *CommentOperation) IsStoryOperation() bool {
 //             (weight) )
 
 type VoteOperation struct {
-	Voter    string            `json:"voter"`
-	Author   string            `json:"author"`
-	Permlink string            `json:"permlink"`
-	Weight   simpletypes.Int16 `json:"weight"`
+	Voter    string `json:"voter"`
+	Author   string `json:"author"`
+	Permlink string `json:"permlink"`
+	Weight   Int16  `json:"weight"`
 }
 
 func (op *VoteOperation) Type() OpType {
@@ -353,12 +352,12 @@ func (op *VoteOperation) MarshalTransaction(encoder *transaction.Encoder) error 
 //             (expiration) )
 
 type LimitOrderCreateOperation struct {
-	Owner        string            `json:"owner"`
-	OrderID      uint32            `json:"orderid"`
-	AmountToSell string            `json:"amount_to_sell"`
-	MinToReceive string            `json:"min_to_receive"`
-	FillOrKill   bool              `json:"fill_or_kill"`
-	Expiration   *simpletypes.Time `json:"expiration"`
+	Owner        string `json:"owner"`
+	OrderID      uint32 `json:"orderid"`
+	AmountToSell string `json:"amount_to_sell"`
+	MinToReceive string `json:"min_to_receive"`
+	FillOrKill   bool   `json:"fill_or_kill"`
+	Expiration   *Time  `json:"expiration"`
 }
 
 func (op *LimitOrderCreateOperation) Type() OpType {

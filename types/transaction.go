@@ -3,8 +3,6 @@ package types
 import (
 	// RPC
 	"github.com/go-steem/rpc/encoding/transaction"
-	"github.com/go-steem/rpc/types/operations"
-	"github.com/go-steem/rpc/types/simpletypes"
 
 	// Vendor
 	"github.com/pkg/errors"
@@ -12,10 +10,10 @@ import (
 
 // Transaction represents a blockchain transaction.
 type Transaction struct {
-	RefBlockNum    simpletypes.UInt16
-	RefBlockPrefix simpletypes.UInt32
-	Expiration     *simpletypes.Time
-	Operations     []*operations.Operation
+	RefBlockNum    UInt16
+	RefBlockPrefix UInt32
+	Expiration     *Time
+	Operations     []Operation
 	Signatures     []string
 }
 
@@ -33,13 +31,13 @@ func (tx *Transaction) MarshalTransaction(encoder *transaction.Encoder) error {
 
 	enc.EncodeUVarint(uint64(len(tx.Operations)))
 	for _, op := range tx.Operations {
-		enc.Encode(op.Data)
+		enc.Encode(op)
 	}
 
 	return enc.Err()
 }
 
 // PushOperation can be used to add an operation into the transaction.
-func (tx *Transaction) PushOperation(op operations.Operation) {
-	tx.Operations = append(tx.Operations, &operations.OperationWrapper{op})
+func (tx *Transaction) PushOperation(op Operation) {
+	tx.Operations = append(tx.Operations, &OperationWrapper{op})
 }
