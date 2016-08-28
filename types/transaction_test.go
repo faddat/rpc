@@ -2,13 +2,13 @@ package types
 
 import (
 	// Stdlib
+	"bytes"
 	"encoding/hex"
 	"testing"
 	"time"
 
 	// RPC
-	"github.com/go-steem/rpc/apis/database"
-	"github.com/go-steem/rpc/types"
+	"github.com/go-steem/rpc/encoding/transaction"
 )
 
 func TestTransaction_MarshalTransaction(t *testing.T) {
@@ -22,7 +22,7 @@ func TestTransaction_MarshalTransaction(t *testing.T) {
 		RefBlockPrefix: 1164960351,
 		Expiration:     &Time{&expiration},
 	}
-	tx.PushOperation(&operations.VoteOperation{
+	tx.PushOperation(&VoteOperation{
 		Voter:    "xeroc",
 		Author:   "xeroc",
 		Permlink: "piston",
