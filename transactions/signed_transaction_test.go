@@ -16,7 +16,7 @@ var tx *types.Transaction
 func init() {
 	// Prepare the transaction.
 	expiration := time.Date(2016, 8, 8, 12, 24, 17, 0, time.UTC)
-	tx := &types.Transaction{
+	tx = &types.Transaction{
 		RefBlockNum:    36029,
 		RefBlockPrefix: 1164960351,
 		Expiration:     &types.Time{&expiration},

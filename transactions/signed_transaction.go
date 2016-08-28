@@ -34,7 +34,7 @@ func (tx *SignedTransaction) Serialize() ([]byte, error) {
 	var b bytes.Buffer
 	encoder := transaction.NewEncoder(&b)
 
-	if err := tx.MarshalTransaction(encoder); err != nil {
+	if err := tx.Transaction.MarshalTransaction(encoder); err != nil {
 		return nil, err
 	}
 
