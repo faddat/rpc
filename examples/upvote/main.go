@@ -107,9 +107,9 @@ func run() (err error) {
 		Weight:   10000,
 	})
 
-	tx.PushWIF(wifKey)
+	keys := []string{wifKey}
 
-	if err := tx.Sign(); err != nil {
+	if err := tx.Sign(keys, transactions.SteemChain); err != nil {
 		return err
 	}
 
