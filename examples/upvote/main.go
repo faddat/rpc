@@ -4,13 +4,10 @@ import (
 	// Stdlib
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
-	"time"
 
 	// RPC
 	"github.com/go-steem/rpc"
@@ -41,10 +38,10 @@ func run() (err error) {
 	if len(args) != 3 {
 		return errors.New("3 arguments required")
 	}
-	voter, author, permlink := args[0], args[1], args[2]
+	author, permlink, voter := args[0], args[1], args[2]
 
 	// Prompt for WIF.
-	wifKey, err := promptWIF()
+	wifKey, err := promptWIF(voter)
 	if err != nil {
 		return err
 	}
