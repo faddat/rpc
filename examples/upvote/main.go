@@ -16,7 +16,7 @@ import (
 	"github.com/go-steem/rpc"
 	"github.com/go-steem/rpc/transactions"
 	"github.com/go-steem/rpc/transports/websocket"
-	"github.com/go-steem/rpc/types/operations"
+	"github.com/go-steem/rpc/types"
 
 	// Vendor
 	"github.com/pkg/errors"
@@ -98,7 +98,7 @@ func run() (err error) {
 		RefBlockPrefix: transactions.RefBlockPrefix(props.HeadBlockID),
 	})
 
-	tx.PushOperation(&operations.Vote{
+	tx.PushOperation(&types.VoteOperation{
 		Voter:    voter,
 		Author:   author,
 		Permlink: permlink,
