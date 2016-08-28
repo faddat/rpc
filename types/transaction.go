@@ -13,7 +13,7 @@ type Transaction struct {
 	RefBlockNum    UInt16
 	RefBlockPrefix UInt32
 	Expiration     *Time
-	Operations     []Operation
+	Operations     Operations
 	Signatures     []string
 }
 
@@ -39,5 +39,5 @@ func (tx *Transaction) MarshalTransaction(encoder *transaction.Encoder) error {
 
 // PushOperation can be used to add an operation into the transaction.
 func (tx *Transaction) PushOperation(op Operation) {
-	tx.Operations = append(tx.Operations, &OperationWrapper{op})
+	tx.Operations = append(tx.Operations, op)
 }

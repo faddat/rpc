@@ -59,20 +59,47 @@ type Operation interface {
 	Data() interface{}
 }
 
-// OperationWrapper wraps an Operation and implements JSON marshalling and unmarshalling logic.
-type OperationWrapper struct {
-	Operation
-}
+type Operations []Operation
 
-func (op *OperationWrapper) MarshalJSON() ([]byte, error) {
-	tuple := []interface{}{
-		op.Type(),
-		op.Data(),
+func (ops *Operations) UnmarshalJSON(data []byte) error {
+	var tuples []*operationTuple
+	if err := json.Unmarshal(data, &tuples); err != nil {
+		return err
 	}
-	return json.Marshal(tuple)
+
+	items := make([]Operation, 0, len(tuples))
+	for _, tuple := range tuples {
+		items = append(items, tuple.Data)
+	}
+
+	*ops = items
+	return nil
 }
 
-func (op *OperationWrapper) UnmarshalJSON(data []byte) error {
+func (ops Operations) MarshalJSON() ([]byte, error) {
+	tuples := make([]*operationTuple, 0, len(ops))
+	for _, op := range ops {
+		tuples = append(tuples, &operationTuple{
+			Type: op.Type(),
+			Data: op.Data().(Operation),
+		})
+	}
+	return json.Marshal(tuples)
+}
+
+type operationTuple struct {
+	Type OpType
+	Data Operation
+}
+
+func (op *operationTuple) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]interface{}{
+		op.Type,
+		op.Data,
+	})
+}
+
+func (op *operationTuple) UnmarshalJSON(data []byte) error {
 	// The operation object is [opType, opBody].
 	raw := make([]*json.RawMessage, 2)
 	if err := json.Unmarshal(data, &raw); err != nil {
@@ -104,6 +131,7 @@ func (op *OperationWrapper) UnmarshalJSON(data []byte) error {
 	}
 
 	// Update fields.
-	op.Operation = template
+	op.Type = opType
+	op.Data = opData
 	return nil
 }
