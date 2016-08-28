@@ -4,10 +4,30 @@ import (
 	// Stdlib
 	"encoding/hex"
 	"testing"
+	"time"
 
 	// RPC
 	"github.com/go-steem/rpc/encoding/wif"
+	"github.com/go-steem/rpc/types"
 )
+
+var tx *types.Transaction
+
+func init() {
+	// Prepare the transaction.
+	expiration := time.Date(2016, 8, 8, 12, 24, 17, 0, time.UTC)
+	tx := &types.Transaction{
+		RefBlockNum:    36029,
+		RefBlockPrefix: 1164960351,
+		Expiration:     &types.Time{&expiration},
+	}
+	tx.PushOperation(&types.VoteOperation{
+		Voter:    "xeroc",
+		Author:   "xeroc",
+		Permlink: "piston",
+		Weight:   10000,
+	})
+}
 
 var wifs = []string{
 	"5JLw5dgQAx6rhZEgNN5C2ds1V47RweGshynFSWFbaMohsYsBvE8",
@@ -40,7 +60,9 @@ func init() {
 func TestTransaction_Digest(t *testing.T) {
 	expected := "ccbcb7d64444356654febe83b8010ca50d99edd0389d273b63746ecaf21adb92"
 
-	digest, err := Digest(&tx, SteemChain)
+	stx := NewSignedTransaction(tx)
+
+	digest, err := stx.Digest(SteemChain)
 	if err != nil {
 		t.Error(err)
 	}
@@ -52,7 +74,9 @@ func TestTransaction_Digest(t *testing.T) {
 }
 
 func TestTransaction_SignAndVerify(t *testing.T) {
-	sigs, err := Sign(&tx, SteemChain, privateKeys)
+	stx := NewSignedTransaction(tx)
+
+	sigs, err := stx.Sign(privateKeys, SteemChain)
 	if err != nil {
 		t.Error(err)
 	}
@@ -66,7 +90,7 @@ func TestTransaction_SignAndVerify(t *testing.T) {
 		tx.Signatures = nil
 	}()
 
-	ok, err := Verify(&tx, SteemChain, publicKeys)
+	ok, err := stx.Verify(publicKeys, SteemChain)
 	if err != nil {
 		t.Error(err)
 	}

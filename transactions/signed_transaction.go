@@ -22,7 +22,15 @@ import (
 // #include "signing.h"
 import "C"
 
-func Serialize(tx *types.Transaction) ([]byte, error) {
+type SignedTransaction struct {
+	*types.Transaction
+}
+
+func NewSignedTransaction(tx *types.Transaction) *SignedTransaction {
+	return &SignedTransaction{tx}
+}
+
+func (tx *SignedTransaction) Serialize() ([]byte, error) {
 	var b bytes.Buffer
 	encoder := transaction.NewEncoder(&b)
 
@@ -33,7 +41,7 @@ func Serialize(tx *types.Transaction) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func Digest(tx *types.Transaction, chain *Chain) ([]byte, error) {
+func (tx *SignedTransaction) Digest(chain *Chain) ([]byte, error) {
 	var msgBuffer bytes.Buffer
 
 	// Write the chain ID.
@@ -47,7 +55,7 @@ func Digest(tx *types.Transaction, chain *Chain) ([]byte, error) {
 	}
 
 	// Write the serialized transaction.
-	rawTx, err := Serialize(tx)
+	rawTx, err := tx.Serialize()
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +69,8 @@ func Digest(tx *types.Transaction, chain *Chain) ([]byte, error) {
 	return digest[:], nil
 }
 
-func Sign(tx *types.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, error) {
-	digest, err := Digest(tx, chain)
+func (tx *SignedTransaction) Sign(privKeys [][]byte, chain *Chain) ([][]byte, error) {
+	digest, err := tx.Digest(chain)
 	if err != nil {
 		return nil, err
 	}
@@ -104,9 +112,9 @@ func Sign(tx *types.Transaction, chain *Chain, privKeys [][]byte) ([][]byte, err
 	return sigs, nil
 }
 
-func Verify(tx *types.Transaction, chain *Chain, pubKeys [][]byte) (bool, error) {
+func (tx *SignedTransaction) Verify(pubKeys [][]byte, chain *Chain) (bool, error) {
 	// Compute the digest, again.
-	digest, err := Digest(tx, chain)
+	digest, err := tx.Digest(chain)
 	if err != nil {
 		return false, err
 	}
