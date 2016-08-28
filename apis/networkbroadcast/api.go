@@ -27,7 +27,8 @@ func (api *API) BroadcastTransaction(tx *types.Transaction) error {
 
 func (api *API) BroadcastTransactionSynchronousRaw(tx *types.Transaction) (*json.RawMessage, error) {
 	var resp json.RawMessage
-	if err := api.call("broadcast_transaction", tx, &resp); err != nil {
+	params := []interface{}{tx}
+	if err := api.call("broadcast_transaction_synchronous", params, &resp); err != nil {
 		return nil, err
 	}
 	return &resp, nil
