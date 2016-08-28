@@ -14,7 +14,6 @@ import (
 
 	// RPC
 	"github.com/go-steem/rpc"
-	"github.com/go-steem/rpc/apis/database"
 	"github.com/go-steem/rpc/transactions"
 	"github.com/go-steem/rpc/transports/websocket"
 	"github.com/go-steem/rpc/types/operations"
