@@ -6,15 +6,18 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 
+	// RPC
+	"github.com/go-steem/rpc/types"
+
 	// Vendor
 	"github.com/pkg/errors"
 )
 
-func RefBlockNum(blockNumber uint32) uint16 {
-	return uint16(blockNumber)
+func RefBlockNum(blockNumber types.UInt32) types.UInt16 {
+	return types.UInt16(blockNumber)
 }
 
-func RefBlockPrefix(blockID string) (uint32, error) {
+func RefBlockPrefix(blockID string) (types.UInt32, error) {
 	// Block ID is hex-encoded.
 	rawBlockID, err := hex.DecodeString(blockID)
 	if err != nil {
@@ -35,5 +38,5 @@ func RefBlockPrefix(blockID string) (uint32, error) {
 	}
 
 	// Done, return the prefix.
-	return prefix, nil
+	return types.UInt32(prefix), nil
 }

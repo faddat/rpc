@@ -90,9 +90,14 @@ func run() (err error) {
 	}
 
 	// Prepare the transaction.
+	refBlockPrefix, err := transactions.RefBlockPrefix(props.HeadBlockID)
+	if err != nil {
+		return err
+	}
+
 	tx := transactions.NewSignedTransaction(&types.Transaction{
 		RefBlockNum:    transactions.RefBlockNum(props.HeadBlockNumber),
-		RefBlockPrefix: transactions.RefBlockPrefix(props.HeadBlockID),
+		RefBlockPrefix: refBlockPrefix,
 	})
 
 	tx.PushOperation(&types.VoteOperation{
