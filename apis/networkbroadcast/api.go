@@ -22,7 +22,8 @@ func (api *API) call(method string, params, resp interface{}) error {
 }
 
 func (api *API) BroadcastTransaction(tx *types.Transaction) error {
-	return api.call("broadcast_transaction", tx, nil)
+	params := []interface{}{tx}
+	return api.call("broadcast_transaction", params, nil)
 }
 
 func (api *API) BroadcastTransactionSynchronousRaw(tx *types.Transaction) (*json.RawMessage, error) {

@@ -120,11 +120,19 @@ func run() (err error) {
 	}
 
 	// Broadcast.
+
 	raw, err := client.NetworkBroadcast.BroadcastTransactionSynchronousRaw(tx.Transaction)
 	if err != nil {
 		return err
 	}
 	fmt.Println("RESPONSE:", string(*raw))
+
+	/*
+		if err := client.NetworkBroadcast.BroadcastTransaction(tx.Transaction); err != nil {
+			return err
+		}
+		fmt.Println("UPVOTED!")
+	*/
 
 	// Success!
 	return nil
@@ -136,5 +144,6 @@ func promptWIF(accountName string) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "failed to read WIF from the terminal")
 	}
+	fmt.Println()
 	return string(passwd), nil
 }
