@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"gopkg.in/dancannon/gorethink.v2"
+        r "gopkg.in/dancannon/gorethink.v2"
 	"github.com/go-steem/rpc"
 	"github.com/go-steem/rpc/transports/websocket"
 )
@@ -22,14 +22,9 @@ func main() {
 
 
 
-
 func run() (err error) {
-
-
-	// Connect to DB Cluster
-    var err error
-    session, err = r.Connect(r.ConnectOpts{
-          Addresses: []string{"138.201.198.167:28015,138.201.198.169:28015,138.201.198.173:28015,138.201.198.175:28015"},
+    Rsession, err := r.Connect(r.ConnectOpts{
+    Addresses: []string{"138.201.198.167:28015,138.201.198.169:28015,138.201.198.173:28015,138.201.198.175:28015"},
     })
     if err != nil {
         log.Fatalln(err.Error())
