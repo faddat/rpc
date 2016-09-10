@@ -8,10 +8,9 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
+	"gopkg.in/dancannon/gorethink.v2"
 	"github.com/go-steem/rpc"
 	"github.com/go-steem/rpc/transports/websocket"
-	"github.com/go-steem/rpc/types"
 )
 
 func main() {
@@ -20,9 +19,26 @@ func main() {
 	}
 }
 
+
+
+
+
 func run() (err error) {
+
+
+	// Connect to DB Cluster
+    var err error
+    session, err = r.Connect(r.ConnectOpts{
+          Addresses: []string{"138.201.198.167:28015,138.201.198.169:28015,138.201.198.173:28015,138.201.198.175:28015"},
+    })
+    if err != nil {
+        log.Fatalln(err.Error())
+    }
+
+
+
 	// Process flags.
-	flagAddress := flag.String("rpc_endpoint", "ws://localhost:8090", "steemd RPC endpoint address")
+	flagAddress := flag.String("rpc_endpoint", "ws://138.201.198.167:8090", "steemd RPC endpoint address")
 	flagReconnect := flag.Bool("reconnect", false, "enable auto-reconnect mode")
 	flag.Parse()
 
@@ -42,7 +58,8 @@ func run() (err error) {
 			err = nil
 		}
 	}()
-
+	Lastblock := 1
+	u := uint32(Lastblock)
 	// Start the connection monitor.
 	monitorChan := make(chan interface{}, 1)
 	if reconnect {
@@ -87,22 +104,9 @@ func run() (err error) {
 		client.Close()
 	}()
 
-	// Get config.
-	log.Println("---> GetConfig()")
-	config, err := client.Database.GetConfig()
-	if err != nil {
-		return err
-	}
-
-	// Use the last irreversible block number as the initial last block number.
-	props, err := client.Database.GetDynamicGlobalProperties()
-	if err != nil {
-		return err
-	}
-	lastBlock := props.LastIrreversibleBlockNum
 
 	// Keep processing incoming blocks forever.
-	log.Printf("---> Entering the block processing loop (last block = %v)\n", lastBlock)
+	log.Printf("---> Entering the block processing loop (last block = %v)\n")
 	for {
 		// Get current properties.
 		props, err := client.Database.GetDynamicGlobalProperties()
@@ -111,29 +115,17 @@ func run() (err error) {
 		}
 
 		// Process new blocks.
-		for props.LastIrreversibleBlockNum-lastBlock > 0 {
-			block, err := client.Database.GetBlock(lastBlock)
+		for props.LastIrreversibleBlockNum-u > 0 {
+			block, err := client.Database.GetBlock(u)
+			fmt.Println(block)
 			if err != nil {
 				return err
 			}
 
 			// Process the transactions.
-			for _, tx := range block.Transactions {
-				for _, operation := range tx.Operations {
-					switch op := operation.Data().(type) {
-					case *types.VoteOperation:
-						fmt.Printf("@%v voted for @%v/%v\n", op.Voter, op.Author, op.Permlink)
 
-						// You can add more cases here, it depends on
-						// what operations you actually need to process.
-					}
-				}
-			}
-
-			lastBlock++
+			u++
+}
 		}
 
-		// Sleep for STEEMIT_BLOCK_INTERVAL seconds before the next iteration.
-		time.Sleep(time.Duration(config.SteemitBlockInterval) * time.Second)
 	}
-}
