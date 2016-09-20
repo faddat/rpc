@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	// Vendor
-	"github.com/faddat/rpc/interfaces"
+	"github.com/go-steem/rpc/interfaces"
 )
 
 var EmptyParams = []string{}
