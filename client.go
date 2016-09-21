@@ -2,11 +2,11 @@ package rpc
 
 import (
 	// RPC
-	"github.com/go-steem/rpc/apis/database"
-	"github.com/go-steem/rpc/apis/follow"
-	"github.com/go-steem/rpc/apis/login"
-	"github.com/go-steem/rpc/apis/networkbroadcast"
-	"github.com/go-steem/rpc/interfaces"
+	"github.com/faddat/rpc/apis/database"
+	"github.com/faddat/rpc/apis/follow"
+	"github.com/faddat/rpc/apis/login"
+	"github.com/faddat/rpc/apis/networkbroadcast"
+	"github.com/faddat/rpc/interfaces"
 )
 
 // Client can be used to access Steem remote APIs.
