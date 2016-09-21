@@ -8,7 +8,7 @@ import (
 	"time"
 
 	// RPC
-	"github.com/go-steem/rpc/interfaces"
+	"github.com/faddat/rpc/interfaces"
 
 	// Vendor
 	"github.com/pkg/errors"

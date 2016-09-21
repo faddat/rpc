@@ -10,11 +10,11 @@ import (
 	"syscall"
 
 	// RPC
-	"github.com/go-steem/rpc"
-	"github.com/go-steem/rpc/encoding/wif"
-	"github.com/go-steem/rpc/transactions"
-	"github.com/go-steem/rpc/transports/websocket"
-	"github.com/go-steem/rpc/types"
+	"github.com/faddat/rpc"
+	"github.com/faddat/rpc/encoding/wif"
+	"github.com/faddat/rpc/transactions"
+	"github.com/faddat/rpc/transports/websocket"
+	"github.com/faddat/rpc/types"
 
 	// Vendor
 	"github.com/pkg/errors"

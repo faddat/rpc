@@ -7,7 +7,7 @@ import (
 	"time"
 
 	// Vendor
-	"github.com/go-steem/rpc-codec/jsonrpc2"
+	"github.com/faddat/rpc-codec/jsonrpc2"
 	"github.com/pkg/errors"
 	"golang.org/x/net/websocket"
 	"gopkg.in/tomb.v2"

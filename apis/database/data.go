@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	// RPC
-	"github.com/go-steem/rpc/types"
+	"github.com/faddat/rpc/types"
 )
 
 type Config struct {

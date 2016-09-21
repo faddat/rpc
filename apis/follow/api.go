@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 
 	// RPC
-	"github.com/go-steem/rpc/interfaces"
-	"github.com/go-steem/rpc/internal/rpc"
+	"github.com/faddat/rpc/interfaces"
+	"github.com/faddat/rpc/internal/rpc"
 
 	// Vendor
 	"github.com/pkg/errors"

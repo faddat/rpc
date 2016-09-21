@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
         r "gopkg.in/dancannon/gorethink.v2"
-	"github.com/go-steem/rpc"
-	"github.com/go-steem/rpc/transports/websocket"
+	"github.com/faddat/rpc"
+	"github.com/faddat/rpc/transports/websocket"
 )
 
 func main() {
